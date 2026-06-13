@@ -145,7 +145,7 @@ export default function About({ onTalkToExpertClick, navigateToPage }: AboutPage
             <div className="md:col-span-5 relative font-sans">
               <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-double border-stone-200 aspect-[4/3] sm:aspect-square bg-stone-100">
                 <img 
-                  src="assets/images.jpg"
+                  src="/Users/abhiram/Documents/work/sri-lakshmi-all-caste-matrimony-main-website 2/assets /Users/abhiram/Documents/work/sri-lakshmi-all-caste-matrimony-main-website 2/index.html /Users/abhiram/Documents/work/sri-lakshmi-all-caste-matrimony-main-website 2/metadata.json /Users/abhiram/Documents/work/sri-lakshmi-all-caste-matrimony-main-website 2/node_modules /Users/abhiram/Documents/work/sri-lakshmi-all-caste-matrimony-main-website 2/package-lock.json /Users/abhiram/Documents/work/sri-lakshmi-all-caste-matrimony-main-website 2/package.json /Users/abhiram/Documents/work/sri-lakshmi-all-caste-matrimony-main-website 2/public /Users/abhiram/Documents/work/sri-lakshmi-all-caste-matrimony-main-website 2/README.md /Users/abhiram/Documents/work/sri-lakshmi-all-caste-matrimony-main-website 2/src /Users/abhiram/Documents/work/sri-lakshmi-all-caste-matrimony-main-website 2/tsconfig.json /Users/abhiram/Documents/work/sri-lakshmi-all-caste-matrimony-main-website 2/vite.config.ts"
                   alt="images" 
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
