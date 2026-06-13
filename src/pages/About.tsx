@@ -2,6 +2,7 @@ import React from 'react';
 import { Heart, Compass, ShieldCheck, Target, Eye, Award, Check, X, Send } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import KiranTVSection from '../components/KiranTVSection';
+import images from '../assets/images.jpg';
 
 interface AboutPageProps {
   onTalkToExpertClick: () => void;
@@ -145,7 +146,7 @@ export default function About({ onTalkToExpertClick, navigateToPage }: AboutPage
             <div className="md:col-span-5 relative font-sans">
               <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-double border-stone-200 aspect-[4/3] sm:aspect-square bg-stone-100">
                 <img 
-                  src="/Users/abhiram/Documents/work/sri-lakshmi-all-caste-matrimony-main-website/assets/images.jpg"
+                  src={images}
                   alt="images" 
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
