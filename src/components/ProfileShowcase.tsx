@@ -82,7 +82,7 @@ export default function ProfileShowcase({ onRegisterScroll, activeTab, setActive
 
     const text = `Namaste Sri Lakshmi All Caste Matrimony,\nI am requesting bio details for Profile ${selectedProfile.id}:\n\n*My Details:*\n- Requesting Person: ${requestName}\n- Phone: ${requestPhone}\n- Relationship: ${requestRelationship}\n\n*Target Profile:*\n- Profile ID: ${selectedProfile.id}\n- Community: ${selectedProfile.community}\n- Role: ${selectedProfile.gender}\n- Profession: ${selectedProfile.profession}`;
     const encoded = encodeURIComponent(text);
-    const url = `https://wa.me/917386915677?text=${encoded}`;
+    const url = `https://wa.me/919121594223?text=${encoded}`;
     try {
       window.open(url, '_blank', 'noreferrer,noopener');
     } catch (err) {

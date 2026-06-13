@@ -15,7 +15,7 @@ export default function MobileStickyCTA({ navigateToPage }: MobileStickyCTAProps
 
   const handleWhatsApp = () => {
     const text = encodeURIComponent("Namaste Sri Lakshmi Matrimony, please send registration guidelines for a suitable Telugu match.");
-    window.open(`https://wa.me/917386915677?text=${text}`, '_blank', 'noopener,noreferrer');
+    window.open(`https://wa.me/919121594223?text=${text}`, '_blank', 'noopener,noreferrer');
   };
 
   const handleRegisterClick = () => {

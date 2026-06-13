@@ -13,7 +13,7 @@ export default function RegistrationCTA({ onRegisterScroll, onTalkToExpertClick 
 
   const handleWhatsApp = () => {
     const text = encodeURIComponent("Hello Sri Lakshmi All Caste Matrimony, I am looking for a suitable match matching our family values. Please assist me with the registration details.");
-    window.open(`https://wa.me/917386915677?text=${text}`, '_blank', 'noopener,noreferrer');
+    window.open(`https://wa.me/919121594223?text=${text}`, '_blank', 'noopener,noreferrer');
   };
 
   return (

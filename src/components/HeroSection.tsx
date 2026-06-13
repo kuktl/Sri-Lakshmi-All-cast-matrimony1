@@ -45,7 +45,7 @@ export default function HeroSection({ onTalkToExpertClick, onRegisterClick }: He
     // Direct integration with WhatsApp to send lead instantly
     const text = `Namaste Sri Lakshmi All Caste Matrimony,\nI have submitted my profile registration:\n\n*Candidate Details:*\n- Full Name: ${fullName}\n- Mobile Number: ${mobileNumber}\n- Gender: ${gender}\n- Father's Mobile: ${fatherMobile}\n- Caste: ${caste}`;
     const encoded = encodeURIComponent(text);
-    const url = `https://wa.me/917386915677?text=${encoded}`;
+    const url = `https://wa.me/919121594223?text=${encoded}`;
     try {
       window.open(url, '_blank', 'noreferrer,noopener');
     } catch (err) {
@@ -222,7 +222,7 @@ export default function HeroSection({ onTalkToExpertClick, onRegisterClick }: He
                       {t('hero.form.notRedirected', 'If WhatsApp did not open automatically, click below:', 'ఒకవేళ వాట్సాప్ ఆటోమేటిక్‌గా ఓపెన్ కాకపోతే, క్రింది బటన్ క్లిక్ చేయండి:')}
                     </p>
                     <a
-                      href={`https://wa.me/917386915677?text=${encodeURIComponent(`Namaste Sri Lakshmi All Caste Matrimony, I want to speed up my registration for ${fullName}, phone:${mobileNumber}, Caste:${caste}`)}`}
+                      href={`https://wa.me/919121594223?text=${encodeURIComponent(`Namaste Sri Lakshmi All Caste Matrimony, I want to speed up my registration for ${fullName}, phone:${mobileNumber}, Caste:${caste}`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#10b981] hover:bg-[#059669] text-white rounded-lg text-xs font-bold shadow-md transition-colors"

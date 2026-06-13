@@ -85,7 +85,7 @@ export default function RegistrationForm() {
   const handleForwardWhatsApp = (sub: any) => {
     const rawText = `Namaste, I registered my ${sub.role} profile on Sri Lakshmi All Caste Matrimony.\n\n*Details:*\n- Name: ${sub.fullName}\n- Profile ID: ${sub.id}\n- Age: ${sub.age} Yrs\n- Community: ${sub.community}\n- Education: ${sub.education}\n- Profession: ${sub.profession}\n- Location: ${sub.location}\n- Preferences: ${sub.preferredMarriageExpectations}\n- Phone: ${sub.phone}\n\nPlease verify and share matching bios.`;
     const text = encodeURIComponent(rawText);
-    window.open(`https://wa.me/917386915677?text=${text}`, '_blank', 'noopener,noreferrer');
+    window.open(`https://wa.me/919121594223?text=${text}`, '_blank', 'noopener,noreferrer');
   };
 
   const handleDelete = (index: number) => {

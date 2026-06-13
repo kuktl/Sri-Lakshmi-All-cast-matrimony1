@@ -30,7 +30,7 @@ export default function CallExpertModal({ isOpen, onClose }: CallExpertModalProp
     const timeStr = preferredTime || 'Anytime (9 AM to 8 PM)';
     const text = `Namaste Sri Lakshmi All Caste Matrimony,\nI would like to request a callback from a Matchmaking Expert:\n\n*My Details:*\n- Name: ${name}\n- Phone: ${phone}\n- Preferred Time: ${timeStr}`;
     const encoded = encodeURIComponent(text);
-    const url = `https://wa.me/917386915677?text=${encoded}`;
+    const url = `https://wa.me/919121594223?text=${encoded}`;
     try {
       window.open(url, '_blank', 'noreferrer,noopener');
     } catch (err) {

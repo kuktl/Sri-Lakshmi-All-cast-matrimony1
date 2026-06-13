@@ -42,7 +42,7 @@ export default function MembershipPlans() {
     // Redirect to WhatsApp instantly on success
     const rawText = `Namaste Sri Lakshmi All Caste Matrimony,\n\nI want to activate the ${selectedPlan} membership plan.\n\n*My Details:*\n- Name: ${fullName}\n- Mobile: ${mobileNumber}\n- Father's Mobile: ${fathersMobileNumber}\n- Caste: ${caste}\n- Profession: ${whatWorks}\n- Specifications: ${comments}`;
     const encoded = encodeURIComponent(rawText);
-    const whatsappUrl = `https://wa.me/917386915677?text=${encoded}`;
+    const whatsappUrl = `https://wa.me/919121594223?text=${encoded}`;
     
     setTimeout(() => {
       try {

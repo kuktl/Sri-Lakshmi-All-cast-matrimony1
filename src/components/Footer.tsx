@@ -21,7 +21,7 @@ export default function Footer({ navigateToPage }: FooterProps) {
   
   const handleWhatsApp = () => {
     const text = encodeURIComponent("Namaste Sri Lakshmi Matrimony, I registered on your portal and seek matchmaking help.");
-    window.open(`https://wa.me/917386915677?text=${text}`, '_blank', 'noopener,noreferrer');
+    window.open(`https://wa.me/919121594223?text=${text}`, '_blank', 'noopener,noreferrer');
   };
 
   return (
