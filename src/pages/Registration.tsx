@@ -89,7 +89,7 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
       status: 'Pending Verification',
       submittedAt: new Date().toLocaleDateString()
     });
-    localStorage.setItem('tr_registrations', JSON.stringify(savedRegistrations));
+    //localStorage.setItem('tr_registrations', JSON.stringify(savedRegistrations));
 
     setSubmitted(true);
     // Auto-scroll to top of container
@@ -109,7 +109,7 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
   const handleWhatsAppForward = () => {
     const rawText = `Namaste Sri Lakshmi Matrimony, I registered my ${community || 'Telugu'} ${role} profile online.\n\n*Details:*\n- Profile ID: ${generatedId}\n- Name: ${fullName}\n- Community: ${community}\n- Age: ${age} Yrs\n- Birth Date: ${dob}\n- Location: ${location}\n- Profession: ${profession}\n- Phone: ${phone}\n\nPlease expedite my matching review.`;
     const encoded = encodeURIComponent(rawText);
-    const url = `https://wa.me/917386915677?text=${encoded}`;
+    const url = `https://wa.me/919121594223?text=${encoded}`;
     try {
       window.open(url, '_blank', 'noopener,noreferrer');
     } catch (err) {

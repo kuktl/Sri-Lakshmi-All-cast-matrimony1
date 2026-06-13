@@ -20,7 +20,8 @@ export default function Profiles({ navigateToPage, activeGender, setActiveGender
   
   // Load registrations from localStorage to display them on Profiles page
   const [allProfiles, setAllProfiles] = useState<Profile[]>(() => {
-    const saved = localStorage.getItem('tr_registrations');
+    //const saved = localStorage.getItem('tr_registrations');
+    const saved = null;
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
