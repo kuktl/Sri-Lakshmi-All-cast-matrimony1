@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Sri Lakshmi All Caste Matrimony",
+  "description": "Premium Goud community Telugu matrimony and marriage bureau landing page.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

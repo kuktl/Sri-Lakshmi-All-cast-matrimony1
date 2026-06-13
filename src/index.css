@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Poppins', sans-serif;
+  --font-serif: 'Playfair Display', serif;
+  --font-display: 'Cinzel', serif;
+
+  --color-maroon-50: #fbf5f5;
+  --color-maroon-100: #f8ebeb;
+  --color-maroon-200: #f0dbdb;
+  --color-maroon-300: #e2bebe;
+  --color-maroon-400: #cf9595;
+  --color-maroon-500: #b56767;
+  --color-maroon-600: #934a4a;
+  --color-maroon-700: #7c3b3b;
+  --color-maroon-800: #6a3232;
+  --color-maroon-900: #582828;
+  --color-maroon-950: #3b1818;
+
+  --color-gold-50: #fefdf5;
+  --color-gold-100: #fcf8e3;
+  --color-gold-200: #f6ecb9;
+  --color-gold-300: #ecda84;
+  --color-gold-400: #dfc252;
+  --color-gold-500: #cca32d;
+  --color-gold-600: #ad8322;
+  --color-gold-700: #8a621c;
+  --color-gold-800: #6e4e1a;
+  --color-gold-900: #5c4117;
+  --color-gold-950: #3e2a0e;
+
+  --color-cream-50: #fdfdfb;
+  --color-cream-100: #FAF7F0;
+  --color-cream-200: #F4EFE0;
+  --color-cream-300: #EADFCA;
+  --color-cream-400: #DECBB0;
+  --color-cream-500: #CBB191;
+  --color-cream-600: #B79873;
+}
+
+@layer base {
+  body {
+    @apply bg-cream-50 text-stone-800 antialiased font-sans overflow-x-hidden;
+  }
+}
+
+/* Beautiful custom Indian wedding patterns */
+.marigold-glow {
+  box-shadow: 0 0 15px rgba(204, 163, 45, 0.3);
+}
+
+.traditional-border {
+  border-image: linear-gradient(to right, #7c3b3b, #cca32d, #7c3b3b) 1;
+}
+
+/* Sawtooth jagged border styling just like premium traditional frames */
+.sawtooth-bg {
+  position: relative;
+}
+.sawtooth-bg::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background-image: linear-gradient(-45deg, #FAF7F0 6px, transparent 0), linear-gradient(45deg, #FAF7F0 6px, transparent 0);
+  background-size: 12px 12px;
+  background-position: left bottom;
+}
+
+.sawtooth-bg-dark::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background-image: linear-gradient(-45deg, #3b1818 6px, transparent 0), linear-gradient(45deg, #3b1818 6px, transparent 0);
+  background-size: 12px 12px;
+  background-position: left bottom;
+}
+
+/* Custom traditional corner patterns */
+.mandala-bullet {
+  width: 14px;
+  height: 14px;
+  background: radial-gradient(circle, #cca32d 0%, #7c3b3b 60%, transparent 100%);
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 5px rgba(204, 163, 45, 0.5);
+}
+
+/* Smooth motion-safe scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
