@@ -38,7 +38,7 @@ export default function Contact({ navigateToPage }: ContactPageProps) {
 
     const text = `Namaste Sri Lakshmi All Caste Matrimony,\n\nI want to send a match enquiry.\n\n*My Details:*\n- Name: ${fullName}\n- Mobile: ${mobileNumber}\n- Father's Mobile: ${fathersMobileNumber}\n- Caste: ${caste}\n- Profession: ${whatWorks}\n- Specifications: ${comments}`;
     const encoded = encodeURIComponent(text);
-    const url = `https://wa.me/91?text=${encoded}`;
+    const url = `https://wa.me/919121594223?text=${encoded}`;
     try {
       window.open(url, '_blank', 'noreferrer,noopener');
     } catch (err) {
@@ -62,7 +62,7 @@ export default function Contact({ navigateToPage }: ContactPageProps) {
 
   const handleWhatsApp = () => {
     const text = encodeURIComponent("Namaste Sri Lakshmi All Caste Matrimony. Seeking matchmaking enquiry guidelines.");
-    window.open(`https://wa.me/91?text=${text}`, '_blank', 'noopener,noreferrer');
+    window.open(`https://wa.me/919121594223?text=${text}`, '_blank', 'noopener,noreferrer');
   };
 
   return (
