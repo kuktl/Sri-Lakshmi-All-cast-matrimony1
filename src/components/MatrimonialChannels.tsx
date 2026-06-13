@@ -277,7 +277,7 @@ export default function MatrimonialChannels() {
   ];
 
   const openChannelModal = (ch: Channel) => {
-    setLanguage('te');
+    //setLanguage('te');
     setSelectedChannel(ch);
     setIsJoinedSuccessfully(false);
     setCandidateName('');
