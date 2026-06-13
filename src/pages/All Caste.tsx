@@ -23,7 +23,7 @@ export default function AllCaste({ navigateToPage, setActiveGender }: Communitie
     to bottom,
     rgba(15, 10, 10, 0.88),
     rgba(28, 12, 12, 0.84)
-  ), url({casteBg})`,
+  ), url('/Candid Wedding Photography Chennai.jpg')`,
 }}
       >
         <div className="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gold-400 via-transparent to-transparent"></div>
@@ -144,7 +144,7 @@ export default function AllCaste({ navigateToPage, setActiveGender }: Communitie
             
             <div className="relative aspect-[4/3] rounded-3xl overflow-hidden border-4 border-double border-stone-200 shadow-2xl bg-stone-100">
               <img 
-                src="/assets/Colourful-Telugu-wedding-in-Hyderabad-28-of-181.webp"
+                src={casteBg}
                   alt="Community-Based Matrimony" 
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
