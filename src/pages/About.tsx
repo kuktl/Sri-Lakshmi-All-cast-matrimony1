@@ -46,7 +46,7 @@ export default function About({ onTalkToExpertClick, navigateToPage }: AboutPage
 
     const rawText = `Namaste Sri Lakshmi All Caste Matrimony,\n\nI want to activate the ${selectedPlan} membership plan.\n\n*My Details:*\n- Name: ${fullName}\n- Mobile: ${mobileNumber}\n- Father's Mobile: ${fathersMobileNumber}\n- Caste: ${caste}\n- Profession: ${whatWorks}\n- Specifications: ${comments}`;
     const encoded = encodeURIComponent(rawText);
-    const whatsappUrl = `https://wa.me/917386915677?text=${encoded}`;
+    const whatsappUrl = `https://wa.me/919121594223?text=${encoded}`;
     
     try {
       window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
@@ -145,7 +145,7 @@ export default function About({ onTalkToExpertClick, navigateToPage }: AboutPage
             <div className="md:col-span-5 relative font-sans">
               <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-double border-stone-200 aspect-[4/3] sm:aspect-square bg-stone-100">
                 <img 
-                  src="/assets/images.jpg"
+                  src="assets/images.jpg"
                   alt="images" 
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
