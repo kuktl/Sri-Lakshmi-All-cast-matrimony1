@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import CallExpertModal from './components/CallExpertModal';
@@ -125,6 +126,9 @@ export default function App() {
         isOpen={isExpertOpen} 
         onClose={handleCloseExpertModal} 
       />
+
+      {/* Vercel Web Analytics */}
+      <Analytics />
 
     </div>
   );
