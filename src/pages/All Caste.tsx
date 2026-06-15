@@ -2,7 +2,7 @@ import React from 'react';
 import { Heart, Globe, Shield, Users, Layers } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import MatrimonialChannels from '../components/MatrimonialChannels';
-import casteBg from "../assets/Candid Wedding Photography Chennai.jpg";
+//import casteBg from "../assets/Candid Wedding Photography Chennai.jpg";
 
 interface CommunitiesPageProps {
   navigateToPage: (page: string) => void;
