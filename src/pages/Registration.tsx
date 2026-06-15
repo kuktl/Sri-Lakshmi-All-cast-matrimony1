@@ -59,42 +59,14 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName || !phone) return;
 
     const randomizedId = 'TRG-' + Math.floor(1000 + Math.random() * 9000);
     setGeneratedId(randomizedId);
 
-    // Save registration details to backend API
-    try {
-      const response = await fetch('http://localhost:5000/api/registrations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fullName,
-          gender: role,
-          age: parseInt(age) || 0,
-          dob,
-          community,
-          location,
-          profession,
-          education,
-          phone,
-          email: email || undefined
-        })
-      });
-
-      if (response.ok) {
-        console.log('Registration saved to backend successfully');
-      } else {
-        console.error('Failed to save registration to backend');
-      }
-    } catch (error) {
-      console.error('Error saving registration to backend:', error);
-    }
-
-    // Also save to localStorage as backup
+    // Save registration details to localStorage
     const savedRegistrations = JSON.parse(localStorage.getItem('tr_registrations') || '[]');
     savedRegistrations.push({
       id: randomizedId,
@@ -117,7 +89,7 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
       status: 'Pending Verification',
       submittedAt: new Date().toLocaleDateString()
     });
-    localStorage.setItem('tr_registrations', JSON.stringify(savedRegistrations));
+    //localStorage.setItem('tr_registrations', JSON.stringify(savedRegistrations));
 
     setSubmitted(true);
     // Auto-scroll to top of container
@@ -126,7 +98,7 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
     // Instantly direct to WhatsApp with all filled data
     const rawText = `Namaste Sri Lakshmi Matrimony, I registered my ${community || 'Telugu'} ${role} profile online.\n\n*Details:*\n- Profile ID: ${randomizedId}\n- Name: ${fullName}\n- Community: ${community}\n- Age: ${age} Yrs\n- Birth Date: ${dob}\n- Location: ${location}\n- Profession: ${profession}\n- Phone: ${phone}\n\nPlease expedite my matching review.`;
     const encoded = encodeURIComponent(rawText);
-    const url = `https://wa.me/919121594223?text=${encoded}`;
+    const url = `https://wa.me/917386915677?text=${encoded}`;
     try {
       window.open(url, '_blank', 'noopener,noreferrer');
     } catch (err) {

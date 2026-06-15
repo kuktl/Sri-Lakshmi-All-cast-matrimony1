@@ -12,7 +12,6 @@ import AllCaste from './pages/All Caste';
 import SuccessStories from './pages/SuccessStories';
 import Contact from './pages/Contact';
 import Registration from './pages/Registration';
-import AdminDashboard from './pages/AdminDashboard';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<string>('home');
@@ -87,10 +86,6 @@ export default function App() {
           <Registration 
             navigateToPage={handleNavigate} 
           />
-        );
-      case 'admin':
-        return (
-          <AdminDashboard />
         );
       default:
         return (

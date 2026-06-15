@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { INITIAL_PROFILES } from '../data';
 import { Profile } from '../types';
 import { Lock, CheckCircle, HelpCircle, MapPin, Briefcase } from 'lucide-react';
@@ -18,58 +18,38 @@ export default function Profiles({ navigateToPage, activeGender, setActiveGender
   const [activeProfession, setActiveProfession] = useState<'All' | 'Software Professionals' | 'Government Employees' | 'Business Families'>('All');
   const [activeCaste, setActiveCaste] = useState<'All' | 'Reddy' | 'Kamma' | 'Kapu' | 'Goud' | 'Brahmin' | 'Arya Vysya' | 'Yadav' | 'Other'>('All');
   
-  // Load profiles from backend API
-  const [allProfiles, setAllProfiles] = useState<Profile[]>(INITIAL_PROFILES);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    fetchProfiles();
-  }, [activeGender, activeLocation, activeProfession, activeCaste]);
-
-  const fetchProfiles = async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      if (activeGender !== 'All') params.append('gender', activeGender);
-      if (activeLocation !== 'All') params.append('location', activeLocation);
-      if (activeProfession !== 'All') params.append('profession', activeProfession);
-      if (activeCaste !== 'All') params.append('community', activeCaste);
-
-      const response = await fetch(`http://localhost:5000/api/profiles?${params}`);
-      if (response.ok) {
-        const backendProfiles = await response.json();
-        // Map backend profiles to frontend Profile type
-        const mappedProfiles: Profile[] = backendProfiles.map((bp: any) => ({
-          id: bp.profileId,
-          gender: bp.gender,
-          age: bp.age,
-          education: bp.education || 'Graduate',
-          profession: bp.profession,
-          location: bp.location,
-          community: bp.community,
-          height: bp.height || "5'5\"",
-          gotram: 'Vasishta',
-          nativePlace: bp.location,
+  // Load registrations from localStorage to display them on Profiles page
+  const [allProfiles, setAllProfiles] = useState<Profile[]>(() => {
+    //const saved = localStorage.getItem('tr_registrations');
+    const saved = null;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        const mapped: Profile[] = parsed.map((reg: any) => ({
+          id: reg.id || `TRG-${Math.floor(1000 + Math.random() * 9000)}`,
+          gender: reg.role === 'Groom' ? 'Groom' : 'Bride',
+          age: Number(reg.age) || 28,
+          education: reg.education || 'Graduate',
+          profession: reg.profession || 'Professional',
+          location: reg.location || 'Hyderabad',
+          community: reg.community || 'Telugu',
+          height: "5'5\"",
+          gotram: reg.subCommunity || 'Vasishta',
+          nativePlace: reg.location || 'Telugu States',
           star: 'Rohini',
-          imageUrl: bp.photos && bp.photos.length > 0 
-            ? `http://localhost:5000${bp.photos[0]}`
-            : (bp.gender === 'Groom' 
-              ? 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80'
-              : 'https://images.unsplash.com/photo-1594744803329-e58b31de215f?w=600&auto=format&fit=crop&q=80')
+          imageUrl: reg.role === 'Groom' 
+            ? 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80'
+            : 'https://images.unsplash.com/photo-1594744803329-e58b31de215f?w=600&auto=format&fit=crop&q=80'
         }));
-        setAllProfiles(mappedProfiles);
-      } else {
-        // Fallback to initial profiles if backend fails
-        setAllProfiles(INITIAL_PROFILES);
+        const existingIds = new Set(INITIAL_PROFILES.map(p => p.id));
+        const filteredMapped = mapped.filter((p: Profile) => !existingIds.has(p.id));
+        return [...INITIAL_PROFILES, ...filteredMapped];
+      } catch (e) {
+        console.error(e);
       }
-    } catch (error) {
-      console.error('Error fetching profiles:', error);
-      // Fallback to initial profiles if backend is not available
-      setAllProfiles(INITIAL_PROFILES);
-    } finally {
-      setLoading(false);
     }
-  };
+    return INITIAL_PROFILES;
+  });
 
   // Request modal state
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
