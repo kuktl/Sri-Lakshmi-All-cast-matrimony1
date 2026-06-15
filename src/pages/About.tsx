@@ -1,4 +1,4 @@
-//import React from 'react';
+import React from 'react';
 import { Heart, Compass, ShieldCheck, Target, Eye, Award, Check, X, Send } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import KiranTVSection from '../components/KiranTVSection';
