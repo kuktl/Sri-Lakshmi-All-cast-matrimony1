@@ -144,7 +144,7 @@ export default function AllCaste({ navigateToPage, setActiveGender }: Communitie
             
             <div className="relative aspect-[4/3] rounded-3xl overflow-hidden border-4 border-double border-stone-200 shadow-2xl bg-stone-100">
               <img 
-                src={casteBg}
+                //src={casteBg}
                   alt="Community-Based Matrimony" 
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
