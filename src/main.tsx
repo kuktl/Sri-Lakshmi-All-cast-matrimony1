@@ -3,6 +3,7 @@ import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 import { LanguageProvider } from './context/LanguageContext';
+import { inject } from '@vercel/analytics';
 
 // Dynamically initialize Google Analytics if configured or fallback
 const GA_ID = (import.meta as any).env?.VITE_GOOGLE_ANALYTICS_ID || 'G-D77LKSNL6X';
@@ -23,6 +24,9 @@ if (GA_ID && typeof window !== 'undefined') {
   `;
   document.head.appendChild(scriptExec);
 }
+
+// Initialize Vercel Analytics
+inject();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
