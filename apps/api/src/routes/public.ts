@@ -40,30 +40,6 @@ publicRouter.get(
   }),
 );
 
-// Active content collections.
-const activeCollections: Record<string, { table: string; order: string }> = {
-  communities: { table: 'communities', order: 'sort_order' },
-  testimonials: { table: 'testimonials', order: 'sort_order' },
-  faqs: { table: 'faqs', order: 'sort_order' },
-  'success-stories': { table: 'success_stories', order: 'sort_order' },
-  'membership-plans': { table: 'membership_plans', order: 'sort_order' },
-};
-
-for (const [path, cfg] of Object.entries(activeCollections)) {
-  publicRouter.get(
-    `/${path}`,
-    asyncHandler(async (_req, res) => {
-      const { data, error } = await supabaseAdmin
-        .from(cfg.table)
-        .select('*')
-        .eq('active', true)
-        .order(cfg.order, { ascending: true });
-      if (error) return fail(res, 500, error.message);
-      return ok(res, data);
-    }),
-  );
-}
-
 // Public profile self-registration → creates a PENDING profile for approval.
 publicRouter.post(
   '/profiles',
