@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Navigate } from 'react-router-dom';
-import { Heart, Lock } from 'lucide-react';
+import { Lock } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
 import { Button } from '../components/ui';
 
@@ -33,10 +33,11 @@ export function Login() {
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-maroon-950 via-maroon-900 to-maroon-950 p-4">
       <div className="w-full max-w-sm rounded-2xl bg-cream-50 p-8 shadow-2xl">
         <div className="mb-6 flex flex-col items-center text-center">
-          <span className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gold-500 text-maroon-950">
-            <Heart className="h-6 w-6" fill="currentColor" />
-          </span>
-          <h1 className="text-xl font-bold text-maroon-950">Sri Lakshmi Matrimony</h1>
+          <img
+            src="/logo.png"
+            alt="Sri Lakshmi All Caste Matrimony"
+            className="mb-3 h-auto w-52 rounded-lg"
+          />
           <p className="text-sm text-maroon-700/70">Admin sign in</p>
         </div>
 
