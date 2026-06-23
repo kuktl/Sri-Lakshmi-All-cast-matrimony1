@@ -1,12 +1,4 @@
-import {
-  Users,
-  Building2,
-  MessageSquareQuote,
-  HelpCircle,
-  Heart,
-  CreditCard,
-  type LucideIcon,
-} from 'lucide-react';
+import { Users, type LucideIcon } from 'lucide-react';
 
 export type FieldType = 'text' | 'textarea' | 'number' | 'boolean' | 'select' | 'image' | 'stringlist';
 
@@ -34,11 +26,6 @@ export interface ResourceDef {
   /** Optional quick-filter chips driven by a single field (e.g. status). */
   filterField?: { key: string; label: string; options: FilterOption[] };
 }
-
-const audit: Field[] = [
-  { key: 'active', label: 'Active', type: 'boolean', inList: true },
-  { key: 'sort_order', label: 'Sort order', type: 'number' },
-];
 
 export const RESOURCES: ResourceDef[] = [
   {
@@ -98,71 +85,6 @@ export const RESOURCES: ResourceDef[] = [
       { key: 'image_url', label: 'Photo URL', type: 'image' },
       { key: 'family_details', label: 'Family details', type: 'textarea' },
       { key: 'match_details', label: 'Match expectations', type: 'textarea' },
-    ],
-  },
-  {
-    key: 'communities',
-    title: 'Communities',
-    singular: 'Community',
-    icon: Building2,
-    fields: [
-      { key: 'name', label: 'Name', type: 'text', required: true, inList: true },
-      { key: 'description', label: 'Description', type: 'textarea' },
-      { key: 'goud', label: 'Goud', type: 'boolean', inList: true },
-      ...audit,
-    ],
-  },
-  {
-    key: 'testimonials',
-    title: 'Testimonials',
-    singular: 'Testimonial',
-    icon: MessageSquareQuote,
-    fields: [
-      { key: 'quote', label: 'Quote', type: 'textarea', required: true, inList: true },
-      { key: 'name', label: 'Name', type: 'text', inList: true },
-      { key: 'location', label: 'Location', type: 'text', inList: true },
-      { key: 'match_year', label: 'Match year', type: 'text' },
-      ...audit,
-    ],
-  },
-  {
-    key: 'faqs',
-    title: 'FAQs',
-    singular: 'FAQ',
-    icon: HelpCircle,
-    fields: [
-      { key: 'question', label: 'Question (EN)', type: 'text', required: true, inList: true },
-      { key: 'answer', label: 'Answer (EN)', type: 'textarea', required: true },
-      { key: 'telugu_question', label: 'Question (TE)', type: 'text' },
-      { key: 'telugu_answer', label: 'Answer (TE)', type: 'textarea' },
-      ...audit,
-    ],
-  },
-  {
-    key: 'success-stories',
-    title: 'Success Stories',
-    singular: 'Success Story',
-    icon: Heart,
-    fields: [
-      { key: 'title', label: 'Title', type: 'text', inList: true },
-      { key: 'couple_names', label: 'Couple names', type: 'text', inList: true },
-      { key: 'content', label: 'Story', type: 'textarea' },
-      { key: 'story_year', label: 'Year', type: 'text', inList: true },
-      { key: 'image_url', label: 'Photo URL', type: 'image' },
-      ...audit,
-    ],
-  },
-  {
-    key: 'membership-plans',
-    title: 'Membership Plans',
-    singular: 'Plan',
-    icon: CreditCard,
-    fields: [
-      { key: 'name', label: 'Name', type: 'text', required: true, inList: true },
-      { key: 'price', label: 'Price', type: 'text', inList: true },
-      { key: 'features', label: 'Features (one per line)', type: 'stringlist' },
-      { key: 'highlighted', label: 'Highlighted', type: 'boolean', inList: true },
-      ...audit,
     ],
   },
 ];

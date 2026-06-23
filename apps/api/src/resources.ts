@@ -37,88 +37,18 @@ const profileBase = {
   status: z.enum(['pending', 'approved', 'rejected']).optional(),
 };
 
-const communityBase = {
-  name: z.string().min(1).max(120),
-  description: z.string().max(1000).optional(),
-  goud: z.boolean().optional(),
-  sort_order: z.number().int().optional(),
-  active: z.boolean().optional(),
-};
-
-const testimonialBase = {
-  quote: z.string().min(1),
-  name: z.string().max(120).optional(),
-  location: z.string().max(120).optional(),
-  match_year: z.string().max(10).optional(),
-  sort_order: z.number().int().optional(),
-  active: z.boolean().optional(),
-};
-
-const faqBase = {
-  question: z.string().min(1),
-  answer: z.string().min(1),
-  telugu_question: z.string().optional(),
-  telugu_answer: z.string().optional(),
-  sort_order: z.number().int().optional(),
-  active: z.boolean().optional(),
-};
-
-const successStoryBase = {
-  title: z.string().max(200).optional(),
-  couple_names: z.string().max(200).optional(),
-  content: z.string().optional(),
-  image_url: z.string().url().max(2000).optional(),
-  story_year: z.string().max(10).optional(),
-  sort_order: z.number().int().optional(),
-  active: z.boolean().optional(),
-};
-
-const membershipPlanBase = {
-  name: z.string().min(1).max(120),
-  price: z.string().max(60).optional(),
-  features: z.array(z.string()).optional(),
-  highlighted: z.boolean().optional(),
-  sort_order: z.number().int().optional(),
-  active: z.boolean().optional(),
-};
-
-/** Resources exposed under /api/admin/:resource with full CRUD. */
+/**
+ * Resources exposed under /api/admin/:resource with full CRUD.
+ * Content sections (communities, testimonials, FAQs, success stories,
+ * membership plans) are hard-coded on the public site and no longer
+ * managed here.
+ */
 export const ADMIN_RESOURCES: Record<string, ResourceConfig> = {
   profiles: {
     table: 'profiles',
     orderBy: { column: 'created_at', ascending: false },
     createSchema: z.object(profileBase),
     updateSchema: z.object(profileBase).partial(),
-  },
-  communities: {
-    table: 'communities',
-    orderBy: { column: 'sort_order', ascending: true },
-    createSchema: z.object(communityBase),
-    updateSchema: z.object(communityBase).partial(),
-  },
-  testimonials: {
-    table: 'testimonials',
-    orderBy: { column: 'sort_order', ascending: true },
-    createSchema: z.object(testimonialBase),
-    updateSchema: z.object(testimonialBase).partial(),
-  },
-  faqs: {
-    table: 'faqs',
-    orderBy: { column: 'sort_order', ascending: true },
-    createSchema: z.object(faqBase),
-    updateSchema: z.object(faqBase).partial(),
-  },
-  'success-stories': {
-    table: 'success_stories',
-    orderBy: { column: 'sort_order', ascending: true },
-    createSchema: z.object(successStoryBase),
-    updateSchema: z.object(successStoryBase).partial(),
-  },
-  'membership-plans': {
-    table: 'membership_plans',
-    orderBy: { column: 'sort_order', ascending: true },
-    createSchema: z.object(membershipPlanBase),
-    updateSchema: z.object(membershipPlanBase).partial(),
   },
 };
 
