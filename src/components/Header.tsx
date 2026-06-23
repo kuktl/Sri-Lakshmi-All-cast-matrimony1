@@ -52,9 +52,9 @@ export default function Header({ currentPage, navigateToPage, onTalkToExpertClic
               <span className="font-sans">Call: +91 91215 94223 / +91 73869 15677</span>
             </a>
             <span className="hidden md:inline text-gold-500/50">|</span>
-            <a href="mailto:info@srilakshmiallcastematrimony.com" className="flex items-center gap-1.5 hover:text-white transition-colors duration-200">
+            <a href="mailto:info@srilakshmiallcastmatrimony.com" className="flex items-center gap-1.5 hover:text-white transition-colors duration-200">
               <Mail size={13} className="text-gold-400" />
-              <span>info@srilakshmiallcastematrimony.com</span>
+              <span>info@srilakshmiallcastmatrimony.com</span>
             </a>
           </div>
 
