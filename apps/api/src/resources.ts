@@ -147,7 +147,9 @@ export const profileSubmitSchema = z.object({
 
 /** Lead creation is public; status updates are admin-only. */
 export const leadCreateSchema = z.object({
-  source: z.enum(['registration', 'expert_call', 'profile_request', 'contact']).optional(),
+  source: z
+    .enum(['registration', 'expert_call', 'profile_request', 'contact', 'membership'])
+    .optional(),
   full_name: z.string().min(1).max(120),
   role: z.enum(['Bride', 'Groom', '']).optional(),
   age: z.string().max(10).optional(),

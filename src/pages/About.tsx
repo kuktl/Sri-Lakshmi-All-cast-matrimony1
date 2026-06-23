@@ -35,7 +35,7 @@ export default function About({ onTalkToExpertClick, navigateToPage }: AboutPage
     // Persist the enquiry as a lead in Supabase via the API.
     try {
       await submitLead({
-        source: 'contact',
+        source: 'membership',
         full_name: fullName.trim(),
         phone: mobileNumber.trim(),
         community: caste || undefined,

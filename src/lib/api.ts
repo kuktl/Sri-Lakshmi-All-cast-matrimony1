@@ -139,7 +139,7 @@ export async function uploadProfilePhoto(file: File): Promise<string> {
 export interface LeadSubmission {
   full_name: string;
   phone: string;
-  source?: 'registration' | 'expert_call' | 'profile_request' | 'contact';
+  source?: 'registration' | 'expert_call' | 'profile_request' | 'contact' | 'membership';
   role?: 'Bride' | 'Groom' | '';
   community?: string;
   location?: string;
