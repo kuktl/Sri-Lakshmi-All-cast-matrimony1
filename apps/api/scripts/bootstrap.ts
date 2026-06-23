@@ -4,7 +4,7 @@
  *
  *   npm run bootstrap
  */
-import { supabaseAdmin } from '../src/supabase.js';
+import { supabaseAdmin } from '../src/supabase';
 
 const ADMIN_EMAIL = process.env.BOOTSTRAP_ADMIN_EMAIL ?? 'demo@demo.com';
 const ADMIN_PASSWORD = process.env.BOOTSTRAP_ADMIN_PASSWORD ?? 'demo12345678';

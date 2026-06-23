@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import ws from 'ws';
-import { env } from './env.js';
+import { env } from './env';
 
 // Node < 22 has no native WebSocket. We don't use Supabase realtime, but the
 // client initializes it, so provide the `ws` transport to satisfy it.

@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { supabaseAdmin } from '../supabase.js';
-import { asyncHandler, fail, ok, zodMessage } from '../http.js';
-import { leadCreateSchema, profileSubmitSchema } from '../resources.js';
+import { supabaseAdmin } from '../supabase';
+import { asyncHandler, fail, ok, zodMessage } from '../http';
+import { leadCreateSchema, profileSubmitSchema } from '../resources';
 
 /**
  * Public, unauthenticated endpoints consumed by the marketing site.
