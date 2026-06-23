@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Check, X } from 'lucide-react';
 import type { ResourceDef } from '../resources';
 import { api } from '../lib/api';
 import { fieldsInList } from '../lib/form';
@@ -73,6 +73,17 @@ export function ResourceCrud({ def }: { def: ResourceDef }) {
       setFormError(e instanceof Error ? e.message : 'Failed to save');
     } finally {
       setSaving(false);
+    }
+  };
+
+  // One-click status change (e.g. approve/reject a profile) without opening the
+  // edit form. Only used for resources whose quick-filter is `status`.
+  const setStatus = async (row: Row, status: string): Promise<void> => {
+    try {
+      await api.patch(`${endpoint}/${row.id}`, { status });
+      await load();
+    } catch (e) {
+      alert(e instanceof Error ? e.message : 'Failed to update status');
     }
   };
 
@@ -165,6 +176,26 @@ export function ResourceCrud({ def }: { def: ResourceDef }) {
                   ))}
                   <td className="px-4 py-3">
                     <div className="flex justify-end gap-1">
+                      {filterField?.key === 'status' && String(row.status) !== 'approved' && (
+                        <Button
+                          variant="ghost"
+                          title="Approve (show on public site)"
+                          onClick={() => void setStatus(row, 'approved')}
+                          className="!px-2 !text-emerald-700 hover:!bg-emerald-50"
+                        >
+                          <Check className="h-4 w-4" />
+                        </Button>
+                      )}
+                      {filterField?.key === 'status' && String(row.status) !== 'rejected' && (
+                        <Button
+                          variant="ghost"
+                          title="Reject"
+                          onClick={() => void setStatus(row, 'rejected')}
+                          className="!px-2 !text-amber-700 hover:!bg-amber-50"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
                       <Button variant="ghost" onClick={() => openEdit(row)} className="!px-2">
                         <Pencil className="h-4 w-4" />
                       </Button>
