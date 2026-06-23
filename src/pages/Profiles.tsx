@@ -5,6 +5,7 @@ import ProfileCard from '../components/ProfileCard';
 import { useLanguage } from '../context/LanguageContext';
 import { fetchApprovedProfiles, submitLead } from '../lib/api';
 import { displayRef } from '../lib/format';
+import { PROFESSION_OPTIONS } from '../lib/options';
 
 interface ProfilesPageProps {
   navigateToPage: (page: string) => void;
@@ -15,8 +16,7 @@ interface ProfilesPageProps {
 export default function Profiles({ navigateToPage, activeGender, setActiveGender }: ProfilesPageProps) {
   const { language, t } = useLanguage();
   // Filters state
-  const [activeLocation, setActiveLocation] = useState<'All' | 'Hyderabad' | 'Telangana' | 'Andhra Pradesh'>('All');
-  const [activeProfession, setActiveProfession] = useState<'All' | 'Software Professionals' | 'Government Employees' | 'Business Families'>('All');
+  const [activeProfession, setActiveProfession] = useState<string>('All');
   const [activeCaste, setActiveCaste] = useState<'All' | 'Reddy' | 'Kamma' | 'Kapu' | 'Goud' | 'Brahmin' | 'Arya Vysya' | 'Yadav' | 'Other'>('All');
   
   // Load approved profiles from the backend API for public display.
@@ -50,27 +50,10 @@ export default function Profiles({ navigateToPage, activeGender, setActiveGender
     // 1. Gender Filter
     const matchesGender = activeGender === 'All' || profile.gender === activeGender;
 
-    // 2. Location Preset Filter
-    let matchesLocation = true;
-    if (activeLocation === 'Hyderabad') {
-      matchesLocation = profile.location.toLowerCase() === 'hyderabad';
-    } else if (activeLocation === 'Telangana') {
-      matchesLocation = ['hyderabad', 'warangal', 'karimnagar'].includes(profile.location.toLowerCase());
-    } else if (activeLocation === 'Andhra Pradesh') {
-      matchesLocation = ['vijayawada'].includes(profile.location.toLowerCase());
-    }
+    // 2. Profession / Designation Filter (exact match against the shared list)
+    const matchesProfession = activeProfession === 'All' || profile.profession === activeProfession;
 
-    // 3. Profession Preset Filter
-    let matchesProfession = true;
-    if (activeProfession === 'Software Professionals') {
-      matchesProfession = profile.profession.toLowerCase().includes('software') || profile.profession.toLowerCase().includes('engineer') || profile.profession.toLowerCase().includes('developer');
-    } else if (activeProfession === 'Government Employees') {
-      matchesProfession = profile.profession.toLowerCase().includes('government');
-    } else if (activeProfession === 'Business Families') {
-      matchesProfession = profile.profession.toLowerCase().includes('business') || profile.profession.toLowerCase().includes('owner');
-    }
-
-    // 4. Caste Filter
+    // 3. Caste Filter
     let matchesCaste = true;
     if (activeCaste !== 'All') {
       if (activeCaste === 'Other') {
@@ -80,7 +63,7 @@ export default function Profiles({ navigateToPage, activeGender, setActiveGender
       }
     }
 
-    return matchesGender && matchesLocation && matchesProfession && matchesCaste;
+    return matchesGender && matchesProfession && matchesCaste;
   });
 
   const handleRequestSubmit = async (e: React.FormEvent) => {
@@ -121,7 +104,6 @@ export default function Profiles({ navigateToPage, activeGender, setActiveGender
 
   const handleResetFilters = () => {
     setActiveGender('All');
-    setActiveLocation('All');
     setActiveProfession('All');
     setActiveCaste('All');
   };
@@ -176,7 +158,7 @@ export default function Profiles({ navigateToPage, activeGender, setActiveGender
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
             
             {/* Gender Filters Tab Options */}
-            <div className="md:col-span-3 space-y-2">
+            <div className="md:col-span-4 space-y-2">
               <span className="block text-[10px] uppercase tracking-widest font-bold text-stone-400">
                 {t('profiles.genderSelect', 'Gender Selection', 'లింగ ఎంపిక')}
               </span>
@@ -201,64 +183,30 @@ export default function Profiles({ navigateToPage, activeGender, setActiveGender
               </div>
             </div>
 
-            {/* Location Filter Presets */}
-            <div className="md:col-span-3 space-y-2">
-              <span className="block text-[10px] uppercase tracking-widest font-bold text-stone-400">
-                {t('profiles.region', 'Region (State/City)', 'ప్రాంతం (రాష్ట్రం / నగరం)')}
-              </span>
-              <div className="flex flex-wrap gap-1.5">
-                {(['All', 'Hyderabad', 'Telangana', 'Andhra Pradesh'] as const).map((loc) => (
-                  <button
-                    key={loc}
-                    onClick={() => setActiveLocation(loc)}
-                    className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all border cursor-pointer ${
-                      activeLocation === loc 
-                        ? 'bg-gold-500 text-maroon-950 border-gold-600' 
-                        : 'bg-white border-stone-200 text-stone-600 hover:border-maroon-800'
-                    }`}
-                  >
-                    {loc === 'All' 
-                      ? t('profiles.locAll', 'All', 'అన్నీ') 
-                      : loc === 'Hyderabad' 
-                        ? t('profiles.locHyd', 'Hyderabad', 'హైదరాబాద్') 
-                        : loc === 'Telangana' 
-                          ? t('profiles.locTe', 'Telangana', 'తెలంగాణ') 
-                          : t('profiles.locAp', 'Andhra Pradesh', 'ఆంధ్రప్రదేశ్')}
-                  </button>
-                ))}
-              </div>
-            </div>
 
-            {/* Profession / Job Presets */}
-            <div className="md:col-span-3 space-y-2">
+            {/* Profession / Designation Select Filter */}
+            <div className="md:col-span-4 space-y-2">
               <span className="block text-[10px] uppercase tracking-widest font-bold text-stone-400">
-                {t('profiles.professionSelect', 'Profession Stream', 'ఉద్యోగ విభాగం')}
+                {t('profiles.professionSelect', 'Designation', 'ఉద్యోగ హోదా')}
               </span>
-              <div className="flex flex-wrap gap-1.5">
-                {(['All', 'Software Professionals', 'Government Employees', 'Business Families'] as const).map((prof) => (
-                  <button
-                    key={prof}
-                    onClick={() => setActiveProfession(prof)}
-                    className={`px-3 py-1.5 text-[11px] font-semibold rounded-lg transition-all border cursor-pointer ${
-                      activeProfession === prof 
-                        ? 'bg-gold-500 text-maroon-950 border-gold-600' 
-                        : 'bg-white border-stone-200 text-stone-600 hover:border-maroon-800'
-                    }`}
-                  >
-                    {prof === 'All' 
-                      ? t('profiles.allJobs', 'All Jobs', 'అన్ని ఉద్యోగాలు') 
-                      : prof === 'Software Professionals' 
-                        ? t('profiles.softwareProf', 'Software Professionals', 'సాఫ్ట్‌വേర్ ఉద్యోగులు') 
-                        : prof === 'Government Employees' 
-                          ? t('profiles.govEmp', 'Government Employees', 'ప్రభుత్వ ఉద్యోగులు') 
-                          : t('profiles.bizFam', 'Business Families', 'వ్యాపార కుటుంబాలు')}
-                  </button>
-                ))}
+              <div className="relative">
+                <select
+                  value={activeProfession}
+                  onChange={(e) => setActiveProfession(e.target.value)}
+                  className="w-full text-xs rounded-xl border border-stone-200 p-2.5 outline-none focus:ring-1 focus:ring-maroon-800 bg-white font-bold text-stone-700 cursor-pointer min-h-[38px] transition-all"
+                >
+                  <option value="All">{t('profiles.allJobs', 'All Designations', 'అన్ని ఉద్యోగాలు')}</option>
+                  {PROFESSION_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
             {/* Caste / Community Select Filter */}
-            <div className="md:col-span-3 space-y-2">
+            <div className="md:col-span-4 space-y-2">
               <span className="block text-[10px] uppercase tracking-widest font-bold text-stone-400 font-sans">
                 {t('profiles.casteSelect', 'Caste / Community', 'కులం ఎంపిక')}
               </span>
