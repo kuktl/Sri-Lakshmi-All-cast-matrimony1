@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
-import { supabaseAdmin, supabaseAnon } from '../supabase';
-import { fail } from '../http';
+import { supabaseAdmin, supabaseAnon } from '../supabase.js';
+import { fail } from '../http.js';
 
 export interface StaffUser {
   id: string;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Heart, Phone, Mail, Facebook, Instagram, Youtube, Twitter, Globe } from 'lucide-react';
+import { Menu, X, Phone, Mail, Facebook, Instagram, Youtube, Twitter, Globe } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function Navbar({ currentPage, navigateToPage, onTalkToExpertClick }) {
@@ -110,35 +110,29 @@ export default function Navbar({ currentPage, navigateToPage, onTalkToExpertClic
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             
-            {/* Logo with traditional icon */}
-            <div 
-              onClick={() => handleNavClick('home')} 
-              className="flex items-center gap-2 cursor-pointer group"
+            {/* Brand wordmark logo */}
+            <div
+              onClick={() => handleNavClick('home')}
+              className="flex items-center cursor-pointer group"
               id="brand-logo"
             >
               {!logoError ? (
-                <div className="relative flex items-center justify-center w-11 h-11 rounded-full bg-transparent overflow-hidden">
-                  <img 
-                    src="/logo.png" 
-                    alt="Logo" 
-                    className="w-full h-full object-cover"
-                    onError={() => setLogoError(true)}
-                  />
-                </div>
+                <img
+                  src="/logo.png"
+                  alt="Sri Lakshmi All Caste Matrimony"
+                  className="h-10 sm:h-11 lg:h-12 w-auto transition-transform duration-300 group-hover:scale-[1.03]"
+                  onError={() => setLogoError(true)}
+                />
               ) : (
-                <div className="relative flex items-center justify-center w-11 h-11 rounded-full bg-maroon-900 border-2 border-gold-400 text-gold-300 shadow-md">
-                  <Heart size={21} className="fill-gold-300 animate-pulse duration-[3000ms]" />
-                  <div className="absolute inset-0 rounded-full border border-gold-300/30 scale-110 group-hover:scale-125 transition-transform duration-500"></div>
+                <div>
+                  <span className="block font-serif text-base sm:text-lg lg:text-xl font-black tracking-wider text-maroon-900 leading-none group-hover:text-gold-600 transition-colors uppercase">
+                    {t('logo.brand', 'SRI LAKSHMI', 'శ్రీ లక్ష్మి')}
+                  </span>
+                  <span className="block font-sans text-[9px] sm:text-[10px] font-bold text-gold-600 uppercase tracking-widest mt-1">
+                    {t('logo.subtitle', 'All Caste Matrimony', 'అన్ని కులాల మ్యాట్రిమోని')}
+                  </span>
                 </div>
               )}
-              <div>
-                <span className="block font-serif text-base sm:text-lg lg:text-xl font-black tracking-wider text-maroon-900 leading-none group-hover:text-gold-600 transition-colors uppercase">
-                  {t('logo.brand', 'SRI LAKSHMI', 'శ్రీ లక్ష్మి')}
-                </span>
-                <span className="block font-sans text-[9px] sm:text-[10px] font-bold text-gold-600 uppercase tracking-widest mt-1">
-                  {t('logo.subtitle', 'All Caste Matrimony', 'అన్ని కులాల మ్యాట్రిమోని')}
-                </span>
-              </div>
             </div>
 
             {/* Desktop Navigation */}

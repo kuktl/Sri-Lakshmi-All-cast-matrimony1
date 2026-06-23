@@ -1,7 +1,6 @@
 import React from 'react';
-import { 
-  Heart, 
-  Phone, 
+import {
+  Phone,
   Mail, 
   MapPin, 
   MessageSquare, 
@@ -41,9 +40,11 @@ export default function Footer({ navigateToPage }: FooterProps) {
               className="flex items-center gap-3 cursor-pointer group" 
               onClick={() => navigateToPage('home')}
             >
-              <div className="w-10 h-10 rounded-full bg-gold-400 hover:bg-gold-550 flex items-center justify-center text-maroon-950 border border-gold-300 transition-colors">
-                <Heart size={18} className="fill-maroon-950 stroke-none group-hover:scale-110 transition-transform" />
-              </div>
+              <img
+                src="/favicon.png"
+                alt="Sri Lakshmi All Caste Matrimony"
+                className="w-11 h-11 rounded-full border border-gold-300/60 shadow-md group-hover:scale-110 transition-transform"
+              />
               <div>
                 <span className="block font-serif text-lg font-black text-gold-300 tracking-wider">
                   SRI LAKSHMI

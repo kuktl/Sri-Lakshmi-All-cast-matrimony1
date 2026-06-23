@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, Heart, Phone, Mail, MessageSquare, Facebook, Instagram, Youtube, Twitter } from 'lucide-react';
+import { Menu, X, Phone, Mail, MessageSquare, Facebook, Instagram, Youtube, Twitter } from 'lucide-react';
 
 interface HeaderProps {
   currentPage: string;
@@ -87,24 +87,17 @@ export default function Header({ currentPage, navigateToPage, onTalkToExpertClic
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             
-            {/* Logo with traditional icon */}
-            <div 
-              onClick={() => handleNavClick('home')} 
-              className="flex items-center gap-2 cursor-pointer group"
+            {/* Brand logo */}
+            <div
+              onClick={() => handleNavClick('home')}
+              className="flex items-center cursor-pointer group"
               id="brand-logo"
             >
-              <div className="relative flex items-center justify-center w-11 h-11 rounded-full bg-maroon-900 border-2 border-gold-400 text-gold-300 shadow-md">
-                <Heart size={21} className="fill-gold-300 animate-pulse duration-[3000ms]" />
-                <div className="absolute inset-0 rounded-full border border-gold-300/30 scale-110 group-hover:scale-125 transition-transform duration-500"></div>
-              </div>
-              <div>
-                <span className="block font-serif text-base sm:text-lg lg:text-xl font-bold tracking-wider text-maroon-900 leading-none group-hover:text-gold-600 transition-colors">
-                  TELUGU REKHA
-                </span>
-                <span className="block font-sans text-[10px] font-bold text-stone-650 uppercase tracking-widest mt-1">
-                  Marriage Bureau
-                </span>
-              </div>
+              <img
+                src="/logo.png"
+                alt="Sri Lakshmi All Caste Matrimony"
+                className="h-10 sm:h-11 lg:h-12 w-auto transition-transform duration-300 group-hover:scale-[1.03]"
+              />
             </div>
 
             {/* Desktop Navigation */}
