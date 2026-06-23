@@ -2,9 +2,31 @@ import React, { useEffect, useState } from 'react';
 import { CheckCircle2, Lock, ShieldCheck, Heart, UserPlus2, Upload, Clock, Phone } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { submitProfile, uploadProfilePhoto } from '../lib/api';
+import { PROFESSION_OPTIONS } from '../lib/options';
 
 interface RegisterPageProps {
   navigateToPage: (page: string) => void;
+}
+
+const MIN_AGE = 18;
+
+/** Whole-year age from an ISO date string, or null if invalid. */
+function ageFromDob(dobStr: string): number | null {
+  if (!dobStr) return null;
+  const dob = new Date(dobStr);
+  if (Number.isNaN(dob.getTime())) return null;
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const m = today.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age -= 1;
+  return age;
+}
+
+/** Latest DOB that still satisfies the minimum age (YYYY-MM-DD), for the picker max. */
+function maxDobForMinAge(): string {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() - MIN_AGE);
+  return d.toISOString().slice(0, 10);
 }
 
 // One registration per 5 minutes, persisted so a page refresh can't bypass it.
@@ -53,6 +75,24 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
   const [generatedId, setGeneratedId] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [ageError, setAgeError] = useState('');
+
+  // DOB drives the age field automatically and enforces the 18+ rule.
+  const handleDobChange = (value: string): void => {
+    setDob(value);
+    const computed = ageFromDob(value);
+    if (computed === null) {
+      setAge('');
+      setAgeError('');
+      return;
+    }
+    setAge(String(computed));
+    setAgeError(
+      computed < MIN_AGE
+        ? t('reg.ageError', 'Candidate must be at least 18 years old.', 'అభ్యర్థి కనీసం 18 సంవత్సరాలు కలిగి ఉండాలి.')
+        : '',
+    );
+  };
 
   // Submission cooldown: timestamp until which a new registration is blocked.
   const [cooldownUntil, setCooldownUntil] = useState<number>(0);
@@ -115,10 +155,19 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
     e.preventDefault();
     if (!fullName || !phone) return;
     if (Date.now() < cooldownUntil) return; // enforce the 5-minute cooldown
+
+    const ageNum = ageFromDob(dob);
+    if (ageNum === null) {
+      setSubmitError(t('reg.dobRequired', 'Please enter a valid date of birth.', 'దయచేసి సరైన పుట్టిన తేదీని నమోదు చేయండి.'));
+      return;
+    }
+    if (ageNum < MIN_AGE) {
+      setSubmitError(t('reg.ageError', 'Candidate must be at least 18 years old.', 'అభ్యర్థి కనీసం 18 సంవత్సరాలు కలిగి ఉండాలి.'));
+      return;
+    }
+
     setSubmitError('');
     setSubmitting(true);
-
-    const ageNum = parseInt(age, 10);
 
     try {
       // Upload the candidate photo first (if provided), then attach its URL.
@@ -273,6 +322,8 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
                         setFullName('');
                         setAge('');
                         setDob('');
+                        setAgeError('');
+                        setSubmitError('');
                         setSubCommunity('');
                         setLocation('');
                         setEducation('');
@@ -334,24 +385,7 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Age */}
-                  <div>
-                    <label className="block text-[11px] font-bold text-stone-700 uppercase mb-1">
-                      {t('reg.age', 'Age *', 'వయస్సు *')}
-                    </label>
-                    <input
-                      type="number"
-                      required
-                      min="18"
-                      max="70"
-                      placeholder={t('reg.agePlaceholder', 'Candidate Age', 'అభ్యర్థి వయస్సు')}
-                      value={age}
-                      onChange={(e) => setAge(e.target.value)}
-                      className="w-full text-xs rounded-xl border border-stone-200 p-3 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-stone-50"
-                    />
-                  </div>
-
-                  {/* DOB */}
+                  {/* DOB — drives Age automatically */}
                   <div>
                     <label className="block text-[11px] font-bold text-stone-700 uppercase mb-1">
                       {t('reg.dob', 'Date of Birth *', 'పుట్టిన తేదీ *')}
@@ -359,9 +393,25 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
                     <input
                       type="date"
                       required
+                      max={maxDobForMinAge()}
                       value={dob}
-                      onChange={(e) => setDob(e.target.value)}
+                      onChange={(e) => handleDobChange(e.target.value)}
                       className="w-full text-xs rounded-xl border border-stone-200 p-3 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-stone-50 text-stone-700"
+                    />
+                    {ageError && <p className="mt-1 text-[11px] font-semibold text-red-600">{ageError}</p>}
+                  </div>
+
+                  {/* Age — auto-filled from Date of Birth */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-stone-700 uppercase mb-1">
+                      {t('reg.age', 'Age (auto)', 'వయస్సు (ఆటో)')}
+                    </label>
+                    <input
+                      type="number"
+                      readOnly
+                      placeholder={t('reg.agePlaceholder', 'From date of birth', 'పుట్టిన తేదీ నుండి')}
+                      value={age}
+                      className="w-full text-xs rounded-xl border border-stone-200 p-3 bg-stone-100 text-stone-700 cursor-not-allowed"
                     />
                   </div>
                 </div>
@@ -445,14 +495,21 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
                     <label className="block text-[11px] font-bold text-stone-700 uppercase mb-1">
                       {t('reg.job', 'Designation & Employment *', 'ఉద్యోగం / కంపెనీ హోదా *')}
                     </label>
-                    <input
-                      type="text"
+                    <select
                       required
-                      placeholder="e.g. Senior Software Engineer at TCS"
                       value={profession}
                       onChange={(e) => setProfession(e.target.value)}
-                      className="w-full text-xs rounded-xl border border-stone-200 p-3 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-stone-50"
-                    />
+                      className="w-full text-xs rounded-xl border border-stone-200 p-3 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-stone-50 cursor-pointer"
+                    >
+                      <option value="" disabled>
+                        {t('reg.jobSelect', 'Select designation', 'హోదాను ఎంచుకోండి')}
+                      </option>
+                      {PROFESSION_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   {/* Annual Income */}
