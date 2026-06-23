@@ -5,6 +5,9 @@ import { ok, fail } from './http.js';
 import { publicRouter } from './routes/public.js';
 import { adminRouter } from './routes/admin.js';
 
+// Bump this when forcing a redeploy / to verify which build is live.
+const BUILD = '2026-06-24-lead-enrichment';
+
 /**
  * The configured Express app, without starting a server. Imported by the local
  * dev entry (index.ts) and by the Vercel serverless function (api/index.ts).
@@ -46,7 +49,7 @@ app.use(
 app.use(express.json({ limit: '1mb' }));
 
 // Health check
-app.get('/health', (_req, res) => ok(res, { status: 'ok' }));
+app.get('/health', (_req, res) => ok(res, { status: 'ok', build: BUILD }));
 
 // Public site API and admin API
 app.use('/api', publicRouter);
