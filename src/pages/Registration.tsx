@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CheckCircle2, Lock, ShieldCheck, Heart, UserPlus2, Upload, Clock, Phone } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-import { submitProfile } from '../lib/api';
+import { submitProfile, uploadProfilePhoto } from '../lib/api';
 
 interface RegisterPageProps {
   navigateToPage: (page: string) => void;
@@ -27,9 +27,10 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
   const [whatsapp, setWhatsapp] = useState('');
   const [email, setEmail] = useState('');
   
-  // Drag and drop photo upload simulation
+  // Photo upload (uploaded to storage on submit)
   const [dragActive, setDragActive] = useState(false);
   const [selectedPhotoName, setSelectedPhotoName] = useState<string | null>(null);
+  const [selectedPhotoFile, setSelectedPhotoFile] = useState<File | null>(null);
 
   const [submitted, setSubmitted] = useState(false);
   const [generatedId, setGeneratedId] = useState('');
@@ -52,13 +53,17 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
     setDragActive(false);
     
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      setSelectedPhotoName(e.dataTransfer.files[0].name);
+      const file = e.dataTransfer.files[0];
+      setSelectedPhotoName(file.name);
+      setSelectedPhotoFile(file);
     }
   };
 
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setSelectedPhotoName(e.target.files[0].name);
+      const file = e.target.files[0];
+      setSelectedPhotoName(file.name);
+      setSelectedPhotoFile(file);
     }
   };
 
@@ -71,6 +76,12 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
     const ageNum = parseInt(age, 10);
 
     try {
+      // Upload the candidate photo first (if provided), then attach its URL.
+      let imageUrl: string | undefined;
+      if (selectedPhotoFile) {
+        imageUrl = await uploadProfilePhoto(selectedPhotoFile);
+      }
+
       // Create a PENDING profile in the backend for admin approval.
       const { id } = await submitProfile({
         full_name: fullName.trim(),
@@ -88,6 +99,7 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
         income: income || undefined,
         family_details: familyDetails || undefined,
         match_details: matchDetails || undefined,
+        image_url: imageUrl,
       });
 
       setGeneratedId(id);
@@ -207,6 +219,7 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
                       setWhatsapp('');
                       setEmail('');
                       setSelectedPhotoName(null);
+                      setSelectedPhotoFile(null);
                     }}
                     className="text-xs text-emerald-700 hover:text-emerald-900 font-bold underline cursor-pointer"
                   >
@@ -506,7 +519,10 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
                           </p>
                           <button
                             type="button"
-                            onClick={() => setSelectedPhotoName(null)}
+                            onClick={() => {
+                              setSelectedPhotoName(null);
+                              setSelectedPhotoFile(null);
+                            }}
                             className="text-[10px] text-red-650 font-semibold underline mt-0.5 cursor-pointer"
                           >
                             Remove and re-upload

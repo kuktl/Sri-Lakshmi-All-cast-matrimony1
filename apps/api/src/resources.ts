@@ -142,6 +142,7 @@ export const profileSubmitSchema = z.object({
   income: z.string().max(120).optional(),
   family_details: z.string().max(2000).optional(),
   match_details: z.string().max(2000).optional(),
+  image_url: z.string().url().max(1000).optional(),
 });
 
 /** Lead creation is public; status updates are admin-only. */

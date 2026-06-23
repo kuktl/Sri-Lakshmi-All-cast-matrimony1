@@ -101,11 +101,39 @@ export interface ProfileSubmission {
   income?: string;
   family_details?: string;
   match_details?: string;
+  image_url?: string;
 }
 
 /** Submits a public profile registration (created as pending for approval). */
 export async function submitProfile(input: ProfileSubmission): Promise<{ id: string }> {
   return request<{ id: string }>('POST', '/api/profiles', input);
+}
+
+const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const PHOTO_MAX_BYTES = 5 * 1024 * 1024;
+
+/**
+ * Uploads a registrant's photo to Supabase Storage via a server-issued signed
+ * URL and returns the public URL to attach to the pending profile.
+ */
+export async function uploadProfilePhoto(file: File): Promise<string> {
+  if (!PHOTO_TYPES.includes(file.type)) {
+    throw new Error('Please use a JPG, PNG, or WebP image.');
+  }
+  if (file.size > PHOTO_MAX_BYTES) {
+    throw new Error('Photo must be 5 MB or smaller.');
+  }
+  const { uploadUrl, publicUrl } = await request<{ uploadUrl: string; publicUrl: string }>(
+    'POST',
+    '/api/uploads',
+    { filename: file.name, content_type: file.type },
+  );
+  const form = new FormData();
+  form.append('cacheControl', '3600');
+  form.append('', file);
+  const res = await fetch(uploadUrl, { method: 'PUT', body: form });
+  if (!res.ok) throw new Error(`Photo upload failed (${res.status})`);
+  return publicUrl;
 }
 
 export interface LeadSubmission {
