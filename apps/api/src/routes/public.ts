@@ -1,7 +1,16 @@
 import { Router } from 'express';
+import { randomUUID } from 'node:crypto';
 import { supabaseAdmin } from '../supabase.js';
+import { env } from '../env.js';
 import { asyncHandler, fail, ok, zodMessage } from '../http.js';
-import { leadCreateSchema, profileSubmitSchema } from '../resources.js';
+import { leadCreateSchema, profileSubmitSchema, uploadRequestSchema } from '../resources.js';
+
+const PHOTO_BUCKET = 'profile-photos';
+const EXT_BY_TYPE: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+};
 
 /**
  * Public, unauthenticated endpoints consumed by the marketing site.
@@ -68,6 +77,33 @@ publicRouter.post(
       .single();
     if (error) return fail(res, 500, error.message);
     return ok(res, data, 201);
+  }),
+);
+
+// Public, unauthenticated signed upload URL for a registrant's photo.
+// Returns an absolute upload URL the browser PUTs the file to, plus the
+// eventual public URL to store on the pending profile. The bucket enforces
+// image-only + 5 MB; paths are randomized under a `pending/` prefix.
+publicRouter.post(
+  '/uploads',
+  asyncHandler(async (req, res) => {
+    const parsed = uploadRequestSchema.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, zodMessage(parsed.error));
+
+    const ext = EXT_BY_TYPE[parsed.data.content_type] ?? 'jpg';
+    const path = `pending/${randomUUID()}.${ext}`;
+
+    const { data, error } = await supabaseAdmin.storage
+      .from(PHOTO_BUCKET)
+      .createSignedUploadUrl(path);
+    if (error || !data) return fail(res, 500, error?.message ?? 'Failed to create upload URL');
+
+    // supabase-js v2 returns an absolute signedUrl; fall back to building one.
+    const uploadUrl = /^https?:\/\//.test(data.signedUrl)
+      ? data.signedUrl
+      : `${env.supabaseUrl}/storage/v1${data.signedUrl}`;
+    const publicUrl = supabaseAdmin.storage.from(PHOTO_BUCKET).getPublicUrl(path).data.publicUrl;
+    return ok(res, { uploadUrl, publicUrl });
   }),
 );
 
