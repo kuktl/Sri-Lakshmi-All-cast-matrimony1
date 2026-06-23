@@ -209,16 +209,6 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
       }
       // Auto-scroll to top of container
       window.scrollTo({ top: 0, behavior: 'smooth' });
-
-      // Instantly direct to WhatsApp with all filled data
-      const rawText = `Namaste Sri Lakshmi Matrimony, I registered my ${community || 'Telugu'} ${role} profile online.\n\n*Details:*\n- Name: ${fullName}\n- Community: ${community}\n- Age: ${age} Yrs\n- Birth Date: ${dob}\n- Location: ${location}\n- Profession: ${profession}\n- Phone: ${phone}\n\nPlease expedite my matching review.`;
-      const encoded = encodeURIComponent(rawText);
-      const url = `https://wa.me/917386915677?text=${encoded}`;
-      try {
-        window.open(url, '_blank', 'noopener,noreferrer');
-      } catch (err) {
-        console.error('Popup failed', err);
-      }
     } catch (err) {
       setSubmitError(
         err instanceof Error
