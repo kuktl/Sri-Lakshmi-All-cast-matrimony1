@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ResourceDef } from '../resources';
 import { buildPayload, initFormState, type FormState } from '../lib/form';
 import { ImageUploadField } from './ImageUploadField';
@@ -18,6 +18,12 @@ interface ResourceFormProps {
  */
 export function ResourceForm({ def, initial, onChange }: ResourceFormProps) {
   const [state, setState] = useState<FormState>(() => initFormState(def, initial));
+
+  // Emit the full record once on open so saving without edits still sends data.
+  useEffect(() => {
+    onChange(buildPayload(def, state));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const update = (key: string, value: string | boolean): void => {
     const next = { ...state, [key]: value };
