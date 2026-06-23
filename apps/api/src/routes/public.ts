@@ -83,17 +83,27 @@ publicRouter.post(
   }),
 );
 
-// Public lead submission (registration form + expert-call modal).
+// Public lead submission (every website enquiry form).
 publicRouter.post(
   '/leads',
   asyncHandler(async (req, res) => {
     const parsed = leadCreateSchema.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, zodMessage(parsed.error));
-    const { data, error } = await supabaseAdmin
-      .from('leads')
-      .insert({ source: 'registration', ...parsed.data })
-      .select('id')
-      .single();
+
+    const payload = { source: 'registration', ...parsed.data };
+    let { data, error } = await supabaseAdmin.from('leads').insert(payload).select('id').single();
+
+    // Resilience: if the DB still has the older source CHECK constraint (e.g.
+    // the 'membership' value was added in code but the migration wasn't run),
+    // retry with a known-allowed source so the lead is never silently lost.
+    if (error && error.message.includes('leads_source_check') && payload.source !== 'contact') {
+      ({ data, error } = await supabaseAdmin
+        .from('leads')
+        .insert({ ...payload, source: 'contact' })
+        .select('id')
+        .single());
+    }
+
     if (error) return fail(res, 500, error.message);
     return ok(res, data, 201);
   }),

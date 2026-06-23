@@ -3,63 +3,45 @@ import { Check, X, Send } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { submitLead } from '../lib/api';
 
+const PLAN_OPTIONS = ['Basic Package (₹999)', 'Premium Package (₹1,999)'];
+
 export default function MembershipPlans() {
   const { language, t } = useLanguage();
   const [isContactModalOpen, setIsContactModalOpen] = React.useState(false);
   const [selectedPlan, setSelectedPlan] = React.useState('');
   const [fullName, setFullName] = React.useState('');
   const [mobileNumber, setMobileNumber] = React.useState('');
-  const [fathersMobileNumber, setFathersMobileNumber] = React.useState('');
-  const [whatWorks, setWhatWorks] = React.useState('');
-  const [caste, setCaste] = React.useState('');
-  const [comments, setComments] = React.useState('');
   const [submitted, setSubmitted] = React.useState(false);
 
   const handleChoosePlan = (planName: string) => {
     setSelectedPlan(planName);
-    setComments(language === 'te' ? `${planName} పట్ల ఆసక్తి కలిగి ఉన్నారు.` : `Interested in registering for ${planName}.`);
     setIsContactModalOpen(true);
   };
 
   const handleSubmitContact = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName || !mobileNumber || !fathersMobileNumber) return;
+    if (!fullName || !mobileNumber || !selectedPlan) return;
 
-    // Persist the membership enquiry as a lead in Supabase via the API.
+    // Persist the package enquiry as a lead in Supabase via the API.
     try {
       await submitLead({
         source: 'membership',
         full_name: fullName.trim(),
         phone: mobileNumber.trim(),
-        community: caste || undefined,
-        profession: whatWorks || undefined,
-        message: `Membership enquiry${selectedPlan ? ` (Plan: ${selectedPlan})` : ''}. Father's mobile: ${fathersMobileNumber}. ${comments}`.trim(),
+        message: `Package enquiry: ${selectedPlan}`,
       });
     } catch (err) {
       console.error('Failed to submit enquiry', err);
     }
 
     setSubmitted(true);
-    
-    // Redirect to WhatsApp instantly on success
-    const rawText = `Namaste Sri Lakshmi All Caste Matrimony,\n\nI want to activate the ${selectedPlan} membership plan.\n\n*My Details:*\n- Name: ${fullName}\n- Mobile: ${mobileNumber}\n- Father's Mobile: ${fathersMobileNumber}\n- Caste: ${caste}\n- Profession: ${whatWorks}\n- Specifications: ${comments}`;
-    const encoded = encodeURIComponent(rawText);
-    const whatsappUrl = `https://wa.me/919121594223?text=${encoded}`;
-    
+
     setTimeout(() => {
-      try {
-        window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-      } catch (err) {
-        console.error("Popup blocked: ", err);
-      }
       setSubmitted(false);
       setIsContactModalOpen(false);
       setFullName('');
       setMobileNumber('');
-      setFathersMobileNumber('');
-      setWhatWorks('');
-      setCaste('');
-      setComments('');
+      setSelectedPlan('');
     }, 2000);
   };
 
@@ -237,15 +219,19 @@ export default function MembershipPlans() {
                     <Check size={28} />
                   </div>
                   <h4 className="font-serif font-bold text-xl text-stone-900">
-                    {t('contact.sentOk', 'Redirecting to WhatsApp...', 'ధృవీకరణ కోసం వాట్సాప్‌కు మళ్లించబడుతోంది...')}
+                    {t('contact.sentOk', 'Enquiry Submitted!', 'మీ అభ్యర్థన నమోదైంది!')}
                   </h4>
                   <p className="text-stone-650 text-xs sm:text-sm max-w-md mx-auto leading-relaxed">
-                    Opening instant activation request on WhatsApp for <strong className="text-stone-900">{fullName}</strong> under selected <strong className="text-stone-900">{selectedPlan}</strong>.
+                    {t(
+                      'contact.sentOkDesc',
+                      'Thank you! Our team will contact you shortly about the selected package.',
+                      'ధన్యవాదాలు! ఎంచుకున్న ప్యాకేజీ గురించి మా బృందం త్వరలో మిమ్మల్ని సంప్రదిస్తుంది.',
+                    )}
                   </p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmitContact} className="space-y-4">
-                  
+
                   <div>
                     <label className="block text-[11px] font-bold text-stone-700 uppercase mb-1">
                       {t('contact.fullName', 'Full Name', 'పూర్తి పేరు')} <span className="text-red-500">*</span>
@@ -253,106 +239,47 @@ export default function MembershipPlans() {
                     <input
                       type="text"
                       required
-                      placeholder={t('contact.fullNamePlaceholder', "Enter candidate's or parent's full name", 'అభ్యర్థి లేదా తల్లిదండ్రుల పూర్తి పేరు दर्ज చేయండి')}
+                      placeholder={t('contact.fullNamePlaceholder', "Enter candidate's or parent's full name", 'అభ్యర్థి లేదా తల్లిదండ్రుల పూర్తి పేరు')}
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       className="w-full text-xs rounded-xl border border-stone-200 p-3 focus:outline-none focus:ring-1 focus:ring-[#10b981] bg-stone-50 text-stone-900 font-medium"
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-[11px] font-bold text-stone-700 uppercase mb-1">
-                        {t('contact.mobNo', 'Mobile Number', 'మొబైల్ నంబర్')} <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="tel"
-                        required
-                        pattern="[0-9]{10,12}"
-                        placeholder={t('contact.tenDigitPlaceholder', '10-digit mobile number', '10 అంకెల మొబైల్ నంబర్')}
-                        value={mobileNumber}
-                        onChange={(e) => setMobileNumber(e.target.value)}
-                        className="w-full text-xs rounded-xl border border-stone-200 p-3 focus:outline-none focus:ring-1 focus:ring-[#10b981] bg-stone-50 text-stone-900 font-medium"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-bold text-stone-700 uppercase mb-1">
-                        {t('contact.fathersMobNo2', "Father's Mobile Number", 'తండ్రి యొక్క మొబైల్ నంబర్')} <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="tel"
-                        required
-                        pattern="[0-9]{10,12}"
-                        placeholder={t('contact.fMobPlaceholder', "Father's or Guardian's mobile number", 'తండ్రి లేదా రక్షకుని మొబైల్ నంబర్')}
-                        value={fathersMobileNumber}
-                        onChange={(e) => setFathersMobileNumber(e.target.value)}
-                        className="w-full text-xs rounded-xl border border-stone-200 p-3 focus:outline-none focus:ring-1 focus:ring-[#10b981] bg-stone-50 text-stone-900 font-medium"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-[11px] font-bold text-stone-700 uppercase mb-1">
-                        {t('contact.jobTitle', 'What he/she works', 'అభ్యర్థి నియామకం / ఉద్యోగం')} <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        placeholder={t('contact.jobPlaceholder', 'e.g. Software Engineer in Hyderabad', 'ఉదా. హైదరాబాదులో సాఫ్ట్‌వేర్ ఇంజనీర్')}
-                        value={whatWorks}
-                        onChange={(e) => setWhatWorks(e.target.value)}
-                        className="w-full text-xs rounded-xl border border-stone-200 p-3 focus:outline-none focus:ring-1 focus:ring-[#10b981] bg-stone-50 text-stone-900 font-medium"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-bold text-stone-700 uppercase mb-1">
-                        {t('contact.caste', 'Caste *', 'కులం *')}
-                      </label>
-                      <select
-                        required
-                        value={caste}
-                        onChange={(e) => setCaste(e.target.value)}
-                        className="w-full text-xs rounded-xl border border-stone-200 p-3 focus:outline-none focus:ring-1 focus:ring-[#10b981] bg-stone-50 text-[#1a1513] font-bold cursor-pointer"
-                      >
-                        <option value="" disabled>
-                          {t('contact.selectCaste', 'Select Caste', 'కులం ఎంచుకోండి')}
-                        </option>
-                        {[
-                          { value: 'Reddy', labelTe: 'రెడ్డి', labelEn: 'Reddy' },
-                          { value: 'Kamma', labelTe: 'కమ్మ', labelEn: 'Kamma' },
-                          { value: 'Kapu', labelTe: 'కాపు', labelEn: 'Kapu' },
-                          { value: 'Goud', labelTe: 'గౌడ్', labelEn: 'Goud' },
-                          { value: 'Brahmin', labelTe: 'బ్రాహ్మణ', labelEn: 'Brahmin' },
-                          { value: 'Naidu', labelTe: 'ನಾಯుడు', labelEn: 'Naidu' },
-                          { value: 'Velama', labelTe: 'వెలమ', labelEn: 'Velama' },
-                          { value: 'Arya Vysya', labelTe: 'ఆర్య వైశ్య', labelEn: 'Arya Vysya' },
-                          { value: 'Padmashali', labelTe: 'పద్మశాలి', labelEn: 'Padmashali' },
-                          { value: 'Yadav', labelTe: 'యాదవ్', labelEn: 'Yadav' },
-                          { value: 'Mudiraj', labelTe: 'ముదిరాజ్', labelEn: 'Mudiraj' },
-                          { value: 'Mala', labelTe: 'మాల', labelEn: 'Mala' },
-                          { value: 'Madiga', labelTe: 'మాదిగ', labelEn: 'Madiga' },
-                          { value: 'Other', labelTe: 'ఇతర కులాలు / అన్ని కులాలు', labelEn: 'All Castes / Other' },
-                        ].map((c) => (
-                          <option key={c.value} value={c.value}>
-                            {language === 'te' ? c.labelTe : c.labelEn}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-stone-700 uppercase mb-1">
+                      {t('contact.mobNo', 'Mobile Number', 'మొబైల్ నంబర్')} <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      pattern="[0-9]{10,12}"
+                      placeholder={t('contact.tenDigitPlaceholder', '10-digit mobile number', '10 అంకెల మొబైల్ నంబర్')}
+                      value={mobileNumber}
+                      onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, ''))}
+                      className="w-full text-xs rounded-xl border border-stone-200 p-3 focus:outline-none focus:ring-1 focus:ring-[#10b981] bg-stone-50 text-stone-900 font-medium"
+                    />
                   </div>
 
                   <div>
                     <label className="block text-[11px] font-bold text-stone-700 uppercase mb-1">
-                      {t('contact.comments', 'Comments / Specifications', 'వ్యాఖ్యలు / ప్రత్యేక అభ్యర్థనలు')}
+                      {t('contact.package', 'Package', 'ప్యాకేజీ')} <span className="text-red-500">*</span>
                     </label>
-                    <textarea
-                      rows={3}
-                      placeholder={t('contact.commentsPlaceholder', 'Please write comments about subclass, expectations, gotram limits...', 'దయచేసి ఉపకులం, ఎత్తు, గోత్ర పరిధులు మరియు ఇతర అంచనాల గురించి రాయండి...')}
-                      value={comments}
-                      onChange={(e) => setComments(e.target.value)}
-                      className="w-full text-xs rounded-xl border border-stone-200 p-3 focus:outline-none focus:ring-1 focus:ring-[#10b981] bg-stone-50 text-stone-900 font-medium resize-none text-[#101010]"
-                    ></textarea>
+                    <select
+                      required
+                      value={selectedPlan}
+                      onChange={(e) => setSelectedPlan(e.target.value)}
+                      className="w-full text-xs rounded-xl border border-stone-200 p-3 focus:outline-none focus:ring-1 focus:ring-[#10b981] bg-stone-50 text-stone-900 font-bold cursor-pointer"
+                    >
+                      <option value="" disabled>
+                        {t('contact.selectPackage', 'Select a package', 'ప్యాకేజీని ఎంచుకోండి')}
+                      </option>
+                      {PLAN_OPTIONS.map((p) => (
+                        <option key={p} value={p}>
+                          {p}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   <div className="pt-2 flex gap-3">

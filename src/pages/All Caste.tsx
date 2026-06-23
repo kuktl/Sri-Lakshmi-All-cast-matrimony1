@@ -143,11 +143,11 @@ export default function AllCaste({ navigateToPage, setActiveGender }: Communitie
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             
             <div className="relative aspect-[4/3] rounded-3xl overflow-hidden border-4 border-double border-stone-200 shadow-2xl bg-stone-100">
-              <img 
-                //src={casteBg}
-                  alt="Community-Based Matrimony" 
+              <img
+                src="/Colourful-Telugu-wedding-in-Hyderabad-28-of-181.webp"
+                alt="Community-Based Matrimony"
+                loading="lazy"
                 className="w-full h-full object-cover"
-                referrerPolicy="no-referrer"
               />
             </div>
 
