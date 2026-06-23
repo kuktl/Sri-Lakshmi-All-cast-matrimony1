@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { supabaseAdmin } from '../supabase';
-import { asyncHandler, fail, ok, zodMessage } from '../http';
-import type { ResourceConfig } from '../resources';
+import { supabaseAdmin } from '../supabase.js';
+import { asyncHandler, fail, ok, zodMessage } from '../http.js';
+import type { ResourceConfig } from '../resources.js';
 
 /**
  * Builds a full CRUD router for one admin resource. All routes assume staff

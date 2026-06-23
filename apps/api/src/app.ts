@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
-import { env } from './env';
-import { ok, fail } from './http';
-import { publicRouter } from './routes/public';
-import { adminRouter } from './routes/admin';
+import { env } from './env.js';
+import { ok, fail } from './http.js';
+import { publicRouter } from './routes/public.js';
+import { adminRouter } from './routes/admin.js';
 
 /**
  * The configured Express app, without starting a server. Imported by the local
