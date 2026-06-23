@@ -52,6 +52,19 @@ export function adminResourceRouter(config: ResourceConfig): Router {
     asyncHandler(async (req, res) => {
       const parsed = updateSchema.safeParse(req.body);
       if (!parsed.success) return fail(res, 400, zodMessage(parsed.error));
+
+      // No fields to change → return the current row instead of a misleading 404.
+      if (Object.keys(parsed.data).length === 0) {
+        const { data, error } = await supabaseAdmin
+          .from(table)
+          .select()
+          .eq('id', req.params.id)
+          .maybeSingle();
+        if (error) return fail(res, 500, error.message);
+        if (!data) return fail(res, 404, 'Not found');
+        return ok(res, data);
+      }
+
       const { data, error } = await supabaseAdmin
         .from(table)
         .update(parsed.data)
