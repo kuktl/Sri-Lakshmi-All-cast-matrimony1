@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { requireStaff } from '../middleware/auth.js';
-import { adminResourceRouter } from './adminResource.js';
+import { requireStaff } from '../middleware/auth';
+import { adminResourceRouter } from './adminResource';
 import { randomUUID } from 'node:crypto';
-import { ADMIN_RESOURCES, accountUpdateSchema, leadUpdateSchema, uploadRequestSchema } from '../resources.js';
-import { supabaseAdmin } from '../supabase.js';
-import { asyncHandler, fail, ok, zodMessage } from '../http.js';
+import { ADMIN_RESOURCES, accountUpdateSchema, leadUpdateSchema, uploadRequestSchema } from '../resources';
+import { supabaseAdmin } from '../supabase';
+import { asyncHandler, fail, ok, zodMessage } from '../http';
 
 /**
  * All admin endpoints. Every route requires a verified staff member.

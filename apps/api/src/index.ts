@@ -1,30 +1,8 @@
-import express from 'express';
-import cors from 'cors';
-import { env } from './env.js';
-import { ok, fail } from './http.js';
-import { publicRouter } from './routes/public.js';
-import { adminRouter } from './routes/admin.js';
+import app from './app';
+import { env } from './env';
 
-const app = express();
-
-app.use(
-  cors({
-    origin: env.corsOrigins,
-    credentials: true,
-  }),
-);
-app.use(express.json({ limit: '1mb' }));
-
-// Health check
-app.get('/health', (_req, res) => ok(res, { status: 'ok' }));
-
-// Public site API and admin API
-app.use('/api', publicRouter);
-app.use('/api/admin', adminRouter);
-
-// 404 fallback
-app.use((_req, res) => fail(res, 404, 'Route not found'));
-
+// Local/long-running server entry. On Vercel the app is served as a serverless
+// function (see api/index.ts) and this file is not used.
 app.listen(env.port, () => {
   // eslint-disable-next-line no-console
   console.log(`[api] listening on http://localhost:${env.port}`);
