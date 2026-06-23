@@ -59,7 +59,8 @@ export default function ProfileShowcase({ onRegisterScroll, activeTab, setActive
         full_name: requestName.trim(),
         phone: requestPhone.trim(),
         community: selectedProfile.community,
-        message: `Requested details for profile ${selectedProfile.id} (${selectedProfile.community} ${selectedProfile.gender}, ${selectedProfile.profession}). Relationship: ${requestRelationship}`,
+        profile_id: selectedProfile.id,
+        message: `Relationship to candidate: ${requestRelationship}.`,
       });
     } catch (err) {
       console.error('Failed to submit profile request', err);
