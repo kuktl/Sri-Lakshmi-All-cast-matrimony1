@@ -1,6 +1,20 @@
 import { Profile } from '../types';
 
-const BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:4000';
+/**
+ * Resolves the API base URL. Prefers the build-time VITE_API_URL; otherwise
+ * defaults to the deployed API on any non-localhost host, and to the local
+ * dev server when running locally. This keeps production working even if the
+ * env var is not configured on the hosting project.
+ */
+function resolveBaseUrl(): string {
+  const envUrl = (import.meta as any).env?.VITE_API_URL as string | undefined;
+  if (envUrl) return envUrl.replace(/\/+$/, '');
+  const host = typeof window !== 'undefined' ? window.location.hostname : '';
+  const isLocal = host === 'localhost' || host === '127.0.0.1';
+  return isLocal ? 'http://localhost:4000' : 'https://sri-lakshmi-api.vercel.app';
+}
+
+const BASE_URL = resolveBaseUrl();
 
 interface ApiEnvelope<T> {
   success: boolean;
