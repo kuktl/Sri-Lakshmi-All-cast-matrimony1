@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Sparkles, Heart, Check, Phone } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { submitLead } from '../lib/api';
 
 interface HeroSectionProps {
   onTalkToExpertClick: () => void;
@@ -36,12 +37,26 @@ export default function HeroSection({ onTalkToExpertClick, onRegisterClick }: He
     { value: 'Other', labelTe: 'ఇతర కులాలు / అన్ని కులాలు', labelEn: 'All Castes / Other' },
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName || !mobileNumber || !gender || !fatherMobile || !caste) return;
 
+    // Persist the home-page registration enquiry as a lead in Supabase.
+    try {
+      await submitLead({
+        source: 'registration',
+        full_name: fullName.trim(),
+        phone: mobileNumber.trim(),
+        role: gender === 'Bride' || gender === 'Groom' ? gender : '',
+        community: caste || undefined,
+        message: `Home registration. Father's mobile: ${fatherMobile}`,
+      });
+    } catch (err) {
+      console.error('Failed to submit registration lead', err);
+    }
+
     setIsSubmitted(true);
-    
+
     // Direct integration with WhatsApp to send lead instantly
     const text = `Namaste Sri Lakshmi All Caste Matrimony,\nI have submitted my profile registration:\n\n*Candidate Details:*\n- Full Name: ${fullName}\n- Mobile Number: ${mobileNumber}\n- Gender: ${gender}\n- Father's Mobile: ${fatherMobile}\n- Caste: ${caste}`;
     const encoded = encodeURIComponent(text);
