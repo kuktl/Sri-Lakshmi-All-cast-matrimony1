@@ -1,10 +1,27 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CheckCircle2, Lock, ShieldCheck, Heart, UserPlus2, Upload, Clock, Phone } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { submitProfile, uploadProfilePhoto } from '../lib/api';
 
 interface RegisterPageProps {
   navigateToPage: (page: string) => void;
+}
+
+// One registration per 5 minutes, persisted so a page refresh can't bypass it.
+const COOLDOWN_MS = 5 * 60 * 1000;
+const COOLDOWN_KEY = 'srl_last_register';
+
+function readCooldown(): { at: number; id: string } | null {
+  try {
+    const raw = localStorage.getItem(COOLDOWN_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { at: number; id: string };
+    if (typeof parsed.at !== 'number') return null;
+    if (Date.now() - parsed.at >= COOLDOWN_MS) return null; // expired
+    return parsed;
+  } catch {
+    return null;
+  }
 }
 
 export default function Registration({ navigateToPage }: RegisterPageProps) {
@@ -36,6 +53,33 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
   const [generatedId, setGeneratedId] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+
+  // Submission cooldown: timestamp until which a new registration is blocked.
+  const [cooldownUntil, setCooldownUntil] = useState<number>(0);
+  const [now, setNow] = useState<number>(() => Date.now());
+
+  // On load, restore an in-progress cooldown so refreshing keeps the lock.
+  useEffect(() => {
+    const cd = readCooldown();
+    if (cd) {
+      setSubmitted(true);
+      setGeneratedId(cd.id);
+      setCooldownUntil(cd.at + COOLDOWN_MS);
+    }
+  }, []);
+
+  // Tick every second while a cooldown is active so the countdown updates.
+  useEffect(() => {
+    if (cooldownUntil <= now) return;
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, [cooldownUntil, now]);
+
+  const cooldownRemaining = Math.max(0, cooldownUntil - now);
+  const cooldownActive = cooldownRemaining > 0;
+  const cooldownLabel = `${Math.floor(cooldownRemaining / 60000)}:${String(
+    Math.floor((cooldownRemaining % 60000) / 1000),
+  ).padStart(2, '0')}`;
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -70,6 +114,7 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName || !phone) return;
+    if (Date.now() < cooldownUntil) return; // enforce the 5-minute cooldown
     setSubmitError('');
     setSubmitting(true);
 
@@ -104,6 +149,15 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
 
       setGeneratedId(id);
       setSubmitted(true);
+      // Start the 5-minute cooldown and persist it across refreshes.
+      const at = Date.now();
+      setCooldownUntil(at + COOLDOWN_MS);
+      setNow(at);
+      try {
+        localStorage.setItem(COOLDOWN_KEY, JSON.stringify({ at, id }));
+      } catch {
+        /* ignore storage failures */
+      }
       // Auto-scroll to top of container
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -202,29 +256,41 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
                 </div>
 
                 <div className="pt-4">
-                  <button
-                    onClick={() => {
-                      setSubmitted(false);
-                      setFullName('');
-                      setAge('');
-                      setDob('');
-                      setSubCommunity('');
-                      setLocation('');
-                      setEducation('');
-                      setProfession('');
-                      setIncome('');
-                      setFamilyDetails('');
-                      setMatchDetails('');
-                      setPhone('');
-                      setWhatsapp('');
-                      setEmail('');
-                      setSelectedPhotoName(null);
-                      setSelectedPhotoFile(null);
-                    }}
-                    className="text-xs text-emerald-700 hover:text-emerald-900 font-bold underline cursor-pointer"
-                  >
-                    {t('reg.another', 'Register Another Candidate Profile', 'మరొక ప్రొఫైల్‌ను నమోదు చేసుకోండి')}
-                  </button>
+                  {cooldownActive ? (
+                    <div className="inline-flex items-center gap-2 rounded-xl border border-stone-200 bg-stone-50 px-4 py-2.5 text-xs font-semibold text-stone-600">
+                      <Clock size={14} className="text-emerald-600" />
+                      {t(
+                        'reg.cooldown',
+                        'You can register another profile in',
+                        'మరొక ప్రొఫైల్‌ను నమోదు చేయడానికి మిగిలిన సమయం',
+                      )}{' '}
+                      <span className="font-mono font-bold text-stone-900 tabular-nums">{cooldownLabel}</span>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setSubmitted(false);
+                        setFullName('');
+                        setAge('');
+                        setDob('');
+                        setSubCommunity('');
+                        setLocation('');
+                        setEducation('');
+                        setProfession('');
+                        setIncome('');
+                        setFamilyDetails('');
+                        setMatchDetails('');
+                        setPhone('');
+                        setWhatsapp('');
+                        setEmail('');
+                        setSelectedPhotoName(null);
+                        setSelectedPhotoFile(null);
+                      }}
+                      className="text-xs text-emerald-700 hover:text-emerald-900 font-bold underline cursor-pointer"
+                    >
+                      {t('reg.another', 'Register Another Candidate Profile', 'మరొక ప్రొఫైల్‌ను నమోదు చేసుకోండి')}
+                    </button>
+                  )}
                 </div>
               </div>
             ) : (
