@@ -1,20 +1,24 @@
-import React, { useState } from 'react';
-import { 
-  Trees, 
-  ShieldCheck, 
-  Wheat, 
-  Sun, 
-  Award, 
-  Layers, 
+import React, { useEffect, useState } from 'react';
+import {
+  Trees,
+  ShieldCheck,
+  Wheat,
+  Sun,
+  Award,
+  Layers,
   Sparkles,
-  Phone,
   MessageCircle,
   Users,
-  CheckCircle2,
-  X,
   Gem
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { fetchApprovedProfiles } from '../lib/api';
+
+interface CommunityCount {
+  total: number;
+  brides: number;
+  grooms: number;
+}
 
 interface Channel {
   id: string;
@@ -40,30 +44,33 @@ interface Channel {
 }
 
 export default function MatrimonialChannels() {
-  const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
-  const [isJoinedSuccessfully, setIsJoinedSuccessfully] = useState(false);
-  const [candidateName, setCandidateName] = useState('');
-  const [candidatePhone, setCandidatePhone] = useState('');
-  const [fatherPhone, setFatherPhone] = useState('');
-  const [caste, setCaste] = useState('');
-  const { language, setLanguage, t } = useLanguage();
+  const { t } = useLanguage();
 
-  const castesList = [
-    { value: 'Reddy', labelTe: 'రెడ్డి', labelEn: 'Reddy' },
-    { value: 'Kamma', labelTe: 'కమ్మ', labelEn: 'Kamma' },
-    { value: 'Kapu', labelTe: 'కాపు', labelEn: 'Kapu' },
-    { value: 'Goud', labelTe: 'గౌడ్', labelEn: 'Goud' },
-    { value: 'Brahmin', labelTe: 'బ్రాహ్మణ', labelEn: 'Brahmin' },
-    { value: 'Naidu', labelTe: 'నాయుడు', labelEn: 'Naidu' },
-    { value: 'Velama', labelTe: 'వెలమ', labelEn: 'Velama' },
-    { value: 'Arya Vysya', labelTe: 'ఆర్య వైశ్య', labelEn: 'Arya Vysya' },
-    { value: 'Padmashali', labelTe: 'పద్మశాలి', labelEn: 'Padmashali' },
-    { value: 'Yadav', labelTe: 'యాదవ్', labelEn: 'Yadav' },
-    { value: 'Mudiraj', labelTe: 'ముదిరాజ్', labelEn: 'Mudiraj' },
-    { value: 'Mala', labelTe: 'మాల', labelEn: 'Mala' },
-    { value: 'Madiga', labelTe: 'మాదిగ', labelEn: 'Madiga' },
-    { value: 'Other', labelTe: 'ఇతర కులాలు / అన్ని కులాలు', labelEn: 'All Castes / Other' },
-  ];
+  // Real-time approved-profile counts per community, loaded from the API.
+  const [counts, setCounts] = useState<Record<string, CommunityCount>>({});
+
+  useEffect(() => {
+    let active = true;
+    fetchApprovedProfiles()
+      .then((profiles) => {
+        if (!active) return;
+        const map: Record<string, CommunityCount> = {};
+        for (const p of profiles) {
+          const key = p.community || 'Other';
+          if (!map[key]) map[key] = { total: 0, brides: 0, grooms: 0 };
+          map[key].total += 1;
+          if (p.gender === 'Bride') map[key].brides += 1;
+          else if (p.gender === 'Groom') map[key].grooms += 1;
+        }
+        setCounts(map);
+      })
+      .catch(() => {
+        /* keep zero counts on failure */
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const channels: Channel[] = [
     {
@@ -276,35 +283,6 @@ export default function MatrimonialChannels() {
     }
   ];
 
-  const openChannelModal = (ch: Channel) => {
-    //setLanguage('te');
-    setSelectedChannel(ch);
-    setIsJoinedSuccessfully(false);
-    setCandidateName('');
-    setCandidatePhone('');
-    setFatherPhone('');
-    setCaste(ch.community);
-  };
-
-  const handleJoinChannel = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsJoinedSuccessfully(true);
-    
-    const message = `Hello Sri Lakshmi Matrimony, I want to join the ${selectedChannel?.name || caste} Desk.\n\n` +
-      `Candidate Name: ${candidateName}\n` +
-      `Mobile Number: ${candidatePhone}\n` +
-      `Father's Mobile Number: ${fatherPhone}\n` +
-      `Caste: ${caste}`;
-       
-    const encodedMessage = encodeURIComponent(message);
-    const phone = '917386915677';
-    
-    setTimeout(() => {
-      window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank');
-      setSelectedChannel(null);
-    }, 1500);
-  };
-
   return (
     <section id="telugu-matrimonial-channels" className="py-20 bg-cream-50 font-sans border-b border-gold-250/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -343,12 +321,12 @@ export default function MatrimonialChannels() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {channels.map((ch) => {
             const IconComponent = ch.icon;
-            
+            const stat = counts[ch.community] || { total: 0, brides: 0, grooms: 0 };
+
             return (
-              <div 
+              <div
                 key={ch.id}
-                onClick={() => openChannelModal(ch)}
-                className="group bg-white rounded-2xl p-6 border border-stone-200/60 hover:border-[#10b981] shadow-xs hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col justify-between relative overflow-hidden"
+                className="group bg-white rounded-2xl p-6 border border-stone-200/60 hover:border-[#10b981] shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative overflow-hidden"
               >
                 {/* Visual Accent Badge */}
                 <div className="absolute top-0 right-0 py-1.5 px-3 bg-stone-100 rounded-bl-xl text-[9px] font-bold text-stone-600 group-hover:bg-emerald-50 group-hover:text-[#10b981] transition-colors">
@@ -375,21 +353,15 @@ export default function MatrimonialChannels() {
                   </p>
                 </div>
 
-                {/* Metric Quick Stats bar */}
+                {/* Metric Quick Stats bar — real-time approved-profile counts */}
                 <div className="pt-4 mt-4 border-t border-stone-100 flex items-center justify-between text-stone-600 text-[11px] font-semibold">
                   <div className="flex items-center gap-1">
                     <Users size={12} className="text-stone-400" />
-                    <span>{ch.activeProfiles} {t('channels.profiles', 'Profiles', 'ప్రొఫైల్స్')}</span>
+                    <span>{stat.total} {t('channels.profiles', 'Profiles', 'ప్రొఫైల్స్')}</span>
                   </div>
                   <div className="text-stone-400 font-normal">
-                    <span>{ch.bridesCount} {t('channels.b', 'B', 'వధువులు')}</span> / <span>{ch.groomsCount} {t('channels.g', 'G', 'వరులు')}</span>
+                    <span>{stat.brides} {t('channels.b', 'B', 'వధువులు')}</span> / <span>{stat.grooms} {t('channels.g', 'G', 'వరులు')}</span>
                   </div>
-                </div>
-
-                {/* Bottom Join CTA trigger bar */}
-                <div className="mt-4 pt-2 flex items-center justify-between text-xs font-bold text-[#10b981] group-hover:underline">
-                  <span>{ch.ctaText || t('channels.enter', 'Enter Verified Channel', 'ధృవీకరించబడిన ఛానెల్‌లో చేరండి')}</span>
-                  <span>→</span>
                 </div>
               </div>
             );
@@ -426,190 +398,6 @@ export default function MatrimonialChannels() {
           </div>
         </div>
 
-        {/* Interactive Channel Connect Modal Overlay */}
-        {selectedChannel && (
-          <div className="fixed inset-0 bg-[#0c120c]/85 flex items-center justify-center z-50 p-4 backdrop-blur-xs">
-            <div className="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl relative border border-stone-100">
-              
-              {/* Close Button */}
-              <button 
-                onClick={() => setSelectedChannel(null)}
-                className="absolute top-4 right-4 text-stone-400 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 p-1.5 rounded-full z-10 transition-colors"
-                aria-label="Close modal"
-              >
-                <X size={16} />
-              </button>
-
-              <div className="p-6 sm:p-8 space-y-6">
-                
-                {/* Header info */}
-                <div className="flex items-center gap-4 border-b border-stone-100 pb-5">
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center bg-emerald-50 text-[#10b981]`}>
-                    {React.createElement(selectedChannel.icon, { size: 30 })}
-                  </div>
-                  <div>
-                    <h3 className="font-serif text-xl font-black text-stone-900 leading-tight">
-                      {selectedChannel.name}
-                    </h3>
-                    <p className="text-xs text-stone-500 mt-1">
-                      {t('channels.subText', 'Connecting verified marriages within', 'వీరి మధ్య ధృవీకరించబడిన వివాహాలను సులభతరం చేయడం -')}{' '}
-                      {selectedChannel.community}{' '}
-                      {t('channels.subTextEnd', 'lineage.', 'వంశక్రమం.')}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Segment Coordinator Profile Details */}
-                <div className="bg-stone-50 rounded-2xl p-4 flex gap-4 items-center border border-stone-200/40">
-                  <img 
-                    src={selectedChannel.coordinator.photo} 
-                    alt={selectedChannel.coordinator.name} 
-                    className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-md bg-stone-200" 
-                  />
-                  <div>
-                    <span className="text-[9px] uppercase font-serif tracking-widest text-emerald-600 font-extrabold block">
-                      {t('channels.assigned', 'Assigned Coordinator', 'నియమించబడిన కోఆర్డినేటర్')}
-                    </span>
-                    <strong className="text-stone-900 text-sm block font-bold leading-tight">{selectedChannel.coordinator.name}</strong>
-                    <div className="flex gap-4 items-center mt-1.5 text-stone-500 text-[11px] font-semibold">
-                      <span>✓ {selectedChannel.coordinator.gotramsVetted}+ {t('channels.gotramsVetted', 'Gotrams Vetted', 'గోత్రాల పరిశీలన')}</span>
-                      <span>• {t('channels.vowsVetted', 'Vows Verified', 'ప్రమాణాలు ధృవీకరించబడ్డాయి')}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Form to submit join query */}
-                {isJoinedSuccessfully ? (
-                  <div className="text-center py-6 space-y-3">
-                    <div className="w-12 h-12 bg-emerald-50 text-[#10b981] rounded-full flex items-center justify-center mx-auto">
-                      <CheckCircle2 size={28} />
-                    </div>
-                    <h4 className="font-serif text-md font-bold text-stone-900">
-                      {t('channels.forwarding', 'Forwarding to Desk...', 'సహాయక కేంద్రానికి ఫార్వార్డ్ చేయబడుతోంది...')}
-                    </h4>
-                    <p className="text-xs text-stone-500 leading-relaxed">
-                      {t(
-                        'channels.forwardingSub',
-                        'Launching WhatsApp with your coordinator details securely. Please click send in WhatsApp window to confirm interest.',
-                        'కోఆర్డినేటర్ వివరాలతో సురక్షితంగా వాట్సాప్ ప్లగ్‌ఇన్ తెరవబడుతోంది. దయచేసి వాట్సాప్ సందేశాన్ని పంపి మీ ఆసక్తిని నిర్ధారించండి.'
-                      )}
-                    </p>
-                  </div>
-                ) : (
-                  <form onSubmit={handleJoinChannel} className="space-y-4">
-                    <div className="text-stone-740 text-xs font-semibold">
-                      {t(
-                        'channels.formDesc',
-                        'Complete registration to join this premium community matrimony channel:',
-                        'ఈ ప్రీమియం కమ్యూనిటీ మ్యాట్రిమోని ఛానెల్‌లో చేరడానికి క్రింది వివరాలను పూరించండి:'
-                      )}
-                    </div>
-
-                    <div className="space-y-3">
-                      {/* Full Name */}
-                      <div>
-                        <label className="block text-[11px] font-bold text-stone-700 uppercase mb-1">
-                          {t('channels.candName', 'Full Name / Candidate Name *', 'అభ్యర్థి పూర్తి పేరు *')}
-                        </label>
-                        <input 
-                          type="text" 
-                          required
-                          value={candidateName}
-                          onChange={(e) => setCandidateName(e.target.value)}
-                          placeholder={t('channels.candPlaceholder', 'e.g. Srikant Reddy / Nagaraju Goud', 'ఉదా. శ్రీకాంత్ రెడ్డి / నాగరాజు గౌడ్')}
-                          className="w-full text-xs p-3 rounded-xl border border-stone-250 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-stone-50 text-stone-900 font-medium"
-                        />
-                      </div>
-
-                      {/* Mobile Number & Father's Mobile Number */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-[11px] font-bold text-stone-700 uppercase mb-1">
-                            {t('channels.candPhone', 'Mobile Number *', 'మొబైల్ సంఖ్య *')}
-                          </label>
-                          <input 
-                            type="tel" 
-                            required
-                            value={candidatePhone}
-                            onChange={(e) => setCandidatePhone(e.target.value)}
-                            placeholder="e.g. +91 91215 94223"
-                            className="w-full text-xs p-3 rounded-xl border border-stone-250 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-stone-50 text-stone-900 font-medium"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-[11px] font-bold text-stone-700 uppercase mb-1">
-                            {t('channels.fatherPhone', "Father's Mobile Number *", 'తండ్రి మొబైల్ సంఖ్య *')}
-                          </label>
-                          <input 
-                            type="tel" 
-                            required
-                            value={fatherPhone}
-                            onChange={(e) => setFatherPhone(e.target.value)}
-                            placeholder="e.g. +91 73869 15677"
-                            className="w-full text-xs p-3 rounded-xl border border-stone-250 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-stone-50 text-stone-900 font-medium"
-                          />
-                        </div>
-                      </div>
-
-                      {/* Caste Dropdown */}
-                      <div>
-                        <label className="block text-[11px] font-bold text-stone-700 uppercase mb-1">
-                          {t('channels.caste', 'Caste Dropdown *', 'కులం *')}
-                        </label>
-                        <select 
-                          required
-                          value={caste}
-                          onChange={(e) => setCaste(e.target.value)}
-                          className="w-full text-xs p-3 rounded-xl border border-stone-250 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-stone-50 text-stone-900 font-semibold cursor-pointer"
-                        >
-                          <option value="" disabled>
-                            {t('channels.casteSelect', 'Select Caste', 'కులం ఎంచుకోండి')}
-                          </option>
-                          {castesList.map((c) => (
-                            <option key={c.value} value={c.value}>
-                              {language === 'te' ? c.labelTe : c.labelEn}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3 pt-2">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedChannel(null)}
-                        className="py-3 px-4 rounded-xl border border-stone-200 text-stone-700 hover:bg-stone-50 text-xs font-bold cursor-pointer transition-colors"
-                      >
-                        {t('channels.cancel', 'Cancel', 'రద్దు చేయి')}
-                      </button>
-
-                      <button
-                        type="submit"
-                        className="py-3 px-4 rounded-xl bg-[#10b981] hover:bg-[#059669] text-white text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer shadow-md transition-colors"
-                      >
-                        <MessageCircle size={14} className="fill-current" /> {t('channels.joinDesk', 'Join Desk', 'కనెక్ట్ అవ్వండి')}
-                      </button>
-                    </div>
-                  </form>
-                )}
-
-                {/* Direct Connect Helpers */}
-                <div className="border-t border-stone-100 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-stone-500 bg-emerald-50/20 -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 p-4 mt-2">
-                  <span>{t('channels.callHelp', 'Need help over phone call?', 'ఫోన్ ద్వారా సహాయం కావాలా?')}</span>
-                  <a 
-                    href={`tel:${selectedChannel.coordinator.phone}`}
-                    className="flex items-center gap-1 font-bold text-emerald-700 hover:underline"
-                  >
-                    <Phone size={11} /> {t('channels.callText', 'Call', 'కాల్ చేయండి:')} {selectedChannel.coordinator.phone}
-                  </a>
-                </div>
-
-              </div>
-
-            </div>
-          </div>
-        )}
 
       </div>
     </section>
