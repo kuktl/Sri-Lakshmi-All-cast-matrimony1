@@ -134,8 +134,8 @@ export default function Footer({ navigateToPage }: FooterProps) {
               </li>
               <li className="flex gap-2.5 items-center font-sans">
                 <Mail size={14} className="text-gold-400 shrink-0" />
-                <a href="mailto:info@srilakshmiallcastematrimony.com" className="hover:text-gold-300 transition-colors font-semibold truncate hover:underline">
-                  info@srilakshmiallcastematrimony.com
+                <a href="mailto:info@srilakshmiallcastmatrimony.com" className="hover:text-gold-300 transition-colors font-semibold truncate hover:underline">
+                  info@srilakshmiallcastmatrimony.com
                 </a>
               </li>
             </ul>

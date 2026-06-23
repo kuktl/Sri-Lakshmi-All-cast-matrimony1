@@ -128,8 +128,8 @@ export default function Contact({ navigateToPage }: ContactPageProps) {
               <span className="block text-[10px] uppercase font-bold text-stone-400 tracking-wider">
                 {t('contact.emailQueries', 'Email Queries', 'ఇమెయిల్ ప్రశ్నలు')}
               </span>
-              <a href="mailto:info@srilakshmiallcastematrimony.com" className="block text-sm font-bold text-stone-850 hover:underline mt-0.5 truncate max-w-[160px] lg:max-w-xs">
-                info@srilakshmiallcastematrimony.com
+              <a href="mailto:info@srilakshmiallcastmatrimony.com" className="block text-sm font-bold text-stone-850 hover:underline mt-0.5 truncate max-w-[160px] lg:max-w-xs">
+                info@srilakshmiallcastmatrimony.com
               </a>
               <p className="text-[10px] text-stone-500 mt-0.5 leading-relaxed">
                 {t('contact.ticketing', 'Official support ticketing', 'అధికారిక సపోర్ట్ మెయిల్')}

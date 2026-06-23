@@ -49,9 +49,9 @@ export default function Navbar({ currentPage, navigateToPage, onTalkToExpertClic
               <span className="font-sans">{t('top.call', 'Call:', 'కాల్ చేయండి:')} +91 91215 94223 / +91 73869 15677</span>
             </a>
             <span className="hidden md:inline text-gold-500/50">|</span>
-            <a href="mailto:info@srilakshmiallcastematrimony.com" className="flex items-center gap-1.5 hover:text-white transition-colors duration-200">
+            <a href="mailto:info@srilakshmiallcastmatrimony.com" className="flex items-center gap-1.5 hover:text-white transition-colors duration-200">
               <Mail size={13} className="text-gold-400" />
-              <span>info@srilakshmiallcastematrimony.com</span>
+              <span>info@srilakshmiallcastmatrimony.com</span>
             </a>
           </div>
 
@@ -102,9 +102,9 @@ export default function Navbar({ currentPage, navigateToPage, onTalkToExpertClic
       {/* 2. Main Header / Sticky Navbar */}
       <div 
         className={`transition-all duration-300 ${
-          scrolled 
-            ? 'bg-white/95 backdrop-blur-md border-b border-gold-300/30 py-3' 
-            : 'bg-cream-100 py-4 border-b border-gold-200/40'
+          scrolled
+            ? 'bg-white/95 backdrop-blur-md border-b border-gold-300/30 py-2'
+            : 'bg-cream-100 py-2.5 border-b border-gold-200/40'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -120,7 +120,7 @@ export default function Navbar({ currentPage, navigateToPage, onTalkToExpertClic
                 <img
                   src="/logo.png"
                   alt="Sri Lakshmi All Caste Matrimony"
-                  className="h-10 sm:h-11 lg:h-12 w-auto transition-transform duration-300 group-hover:scale-[1.03]"
+                  className="h-12 sm:h-14 lg:h-16 w-auto transition-transform duration-300 group-hover:scale-[1.03]"
                   onError={() => setLogoError(true)}
                 />
               ) : (
