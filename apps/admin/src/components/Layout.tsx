@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Inbox, Settings, LogOut, Heart } from 'lucide-react';
+import { LayoutDashboard, Inbox, Settings, LogOut } from 'lucide-react';
 import { RESOURCES } from '../resources';
 import { useAuth } from '../auth/AuthContext';
 import { Button } from './ui';
@@ -21,14 +21,15 @@ export function Layout() {
   return (
     <div className="flex min-h-screen">
       <aside className="flex w-64 flex-col bg-maroon-950 px-4 py-6">
-        <div className="mb-8 flex items-center gap-2.5 px-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gold-500 text-maroon-950">
-            <Heart className="h-5 w-5" fill="currentColor" />
-          </span>
-          <div className="leading-tight">
-            <p className="text-sm font-bold text-cream-50">Sri Lakshmi</p>
-            <p className="text-xs text-gold-300">Admin Panel</p>
-          </div>
+        <div className="mb-8 px-1">
+          <img
+            src="/logo.png"
+            alt="Sri Lakshmi All Caste Matrimony"
+            className="h-auto w-full rounded-lg"
+          />
+          <p className="mt-2 text-center text-[11px] font-semibold uppercase tracking-widest text-gold-300">
+            Admin Panel
+          </p>
         </div>
 
         <nav className="flex flex-1 flex-col gap-1">
