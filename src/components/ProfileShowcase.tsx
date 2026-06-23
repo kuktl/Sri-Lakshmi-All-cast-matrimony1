@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { INITIAL_PROFILES } from '../data';
+import React, { useState, useEffect } from 'react';
 import { Profile } from '../types';
-import { Lock, FileText, CheckCircle, Search, Filter, HelpCircle, Heart, MapPin, Briefcase } from 'lucide-react';
+import { Lock, FileText, CheckCircle, Search, Filter, HelpCircle, Heart, MapPin, Briefcase, Eye, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { fetchApprovedProfiles, submitLead } from '../lib/api';
+import { displayRef } from '../lib/format';
 
 interface ProfileShowcaseProps {
   onRegisterScroll: () => void;
@@ -17,42 +18,26 @@ export default function ProfileShowcase({ onRegisterScroll, activeTab, setActive
   
   // Detail Request modal state
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
+  const [photoProfile, setPhotoProfile] = useState<Profile | null>(null);
   const [requestName, setRequestName] = useState('');
   const [requestPhone, setRequestPhone] = useState('');
   const [requestRelationship, setRequestRelationship] = useState('Parent');
   const [requestSubmitted, setRequestSubmitted] = useState(false);
 
-  // Load registrations from localStorage to display them on Profiles showcase
-  const [allProfiles, setAllProfiles] = useState<Profile[]>(() => {
-    const saved = localStorage.getItem('tr_registrations');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        const mapped: Profile[] = parsed.map((reg: any) => ({
-          id: reg.id || `TRG-${Math.floor(1000 + Math.random() * 9000)}`,
-          gender: reg.role === 'Groom' ? 'Groom' : 'Bride',
-          age: Number(reg.age) || 28,
-          education: reg.education || 'Graduate',
-          profession: reg.profession || 'Professional',
-          location: reg.location || 'Hyderabad',
-          community: reg.community || 'Telugu',
-          height: "5'5\"",
-          gotram: reg.subCommunity || 'Vasishta',
-          nativePlace: reg.location || 'Telugu States',
-          star: 'Rohini',
-          imageUrl: reg.role === 'Groom' 
-            ? 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80'
-            : 'https://images.unsplash.com/photo-1594744803329-e58b31de215f?w=600&auto=format&fit=crop&q=80'
-        }));
-        const existingIds = new Set(INITIAL_PROFILES.map(p => p.id));
-        const filteredMapped = mapped.filter((p: Profile) => !existingIds.has(p.id));
-        return [...INITIAL_PROFILES, ...filteredMapped];
-      } catch (e) {
-        console.error(e);
-      }
-    }
-    return INITIAL_PROFILES;
-  });
+  // Load approved profiles from the backend API for the featured showcase.
+  const [allProfiles, setAllProfiles] = useState<Profile[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    fetchApprovedProfiles()
+      .then((profiles) => {
+        if (active) setAllProfiles(profiles);
+      })
+      .catch((err) => console.error('Failed to load profiles', err));
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // Filter profiles based on tabs and search query using allProfiles
   const filteredProfiles = allProfiles.filter((profile) => {
@@ -63,20 +48,22 @@ export default function ProfileShowcase({ onRegisterScroll, activeTab, setActive
     return matchesTab && matchesLocation && matchesEducation;
   });
 
-  const handleRequestSubmit = (e: React.FormEvent) => {
+  const handleRequestSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!requestName || !requestPhone || !selectedProfile) return;
 
-    // Persist profile request
-    const existingRequests = JSON.parse(localStorage.getItem('tr_profile_requests') || '[]');
-    existingRequests.push({
-      profileId: selectedProfile.id,
-      name: requestName,
-      phone: requestPhone,
-      relationship: requestRelationship,
-      timestamp: new Date().toISOString()
-    });
-    localStorage.setItem('tr_profile_requests', JSON.stringify(existingRequests));
+    // Persist the detail request as a lead in Supabase via the API.
+    try {
+      await submitLead({
+        source: 'profile_request',
+        full_name: requestName.trim(),
+        phone: requestPhone.trim(),
+        community: selectedProfile.community,
+        message: `Requested details for profile ${selectedProfile.id} (${selectedProfile.community} ${selectedProfile.gender}, ${selectedProfile.profession}). Relationship: ${requestRelationship}`,
+      });
+    } catch (err) {
+      console.error('Failed to submit profile request', err);
+    }
 
     setRequestSubmitted(true);
 
@@ -196,7 +183,7 @@ export default function ProfileShowcase({ onRegisterScroll, activeTab, setActive
                 <div className="flex items-center justify-between border-b border-stone-100 pb-3 mb-4 pl-2 font-sans">
                   <div className="flex items-center gap-1.5">
                     <span className="font-mono text-xs font-bold text-maroon-900 bg-maroon-50 px-2.5 py-1 rounded-md border border-maroon-100">
-                      {profile.id}
+                      {displayRef(profile.id)}
                     </span>
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                   </div>
@@ -279,12 +266,19 @@ export default function ProfileShowcase({ onRegisterScroll, activeTab, setActive
                   </div>
                 </div>
 
-                {/* Request details button */}
-                <div className="pt-4 mt-1 border-t border-stone-100 pl-2">
+                {/* Action buttons */}
+                <div className="pt-4 mt-1 border-t border-stone-100 pl-2 flex gap-2">
+                  <button
+                    id={`view-btn-${profile.id}`}
+                    onClick={() => setPhotoProfile(profile)}
+                    className="flex-none py-2.5 px-3 font-semibold text-xs text-gold-700 hover:text-white bg-gold-50 hover:bg-gold-500 border border-gold-200 hover:border-transparent rounded-lg transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <Eye size={13} /> {t('profiles.viewBtn', 'View', 'చూడండి')}
+                  </button>
                   <button
                     id={`request-btn-${profile.id}`}
                     onClick={() => setSelectedProfile(profile)}
-                    className="w-full py-2.5 px-4 font-semibold text-xs text-maroon-800 hover:text-white bg-maroon-50 hover:bg-maroon-800 border border-maroon-200 hover:border-transparent rounded-lg transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                    className="flex-1 py-2.5 px-4 font-semibold text-xs text-maroon-800 hover:text-white bg-maroon-50 hover:bg-maroon-800 border border-maroon-200 hover:border-transparent rounded-lg transition-all cursor-pointer flex items-center justify-center gap-1.5"
                   >
                     <FileText size={12} /> {t('profiles.reqBtn', 'Request Profile Details', 'ప్రొఫైల్ వివరాలను అభ్యర్థించండి')}
                   </button>
@@ -329,7 +323,7 @@ export default function ProfileShowcase({ onRegisterScroll, activeTab, setActive
             {/* Header */}
             <div className="bg-maroon-900 px-6 py-4.5 text-white">
               <h3 className="font-serif text-base font-bold tracking-wide">
-                {t('profiles.reqDetailsTitle', 'Request Details:', 'వివరాల కొరకు అభ్యర్థన:')} {selectedProfile.id}
+                {t('profiles.reqDetailsTitle', 'Request Details:', 'వివరాల కొరకు అభ్యర్థన:')} {displayRef(selectedProfile.id)}
               </h3>
               <p className="text-xs text-maroon-200">
                 {selectedProfile.community} {selectedProfile.gender === 'Bride' ? t('profiles.brideSimp', 'Bride', 'వధువు') : t('profiles.groomSimp', 'Groom', 'వరుడు')} • {selectedProfile.age} {t('profiles.yrs', 'Yrs', 'సంవత్సరాలు')} • {selectedProfile.profession}
@@ -386,10 +380,14 @@ export default function ProfileShowcase({ onRegisterScroll, activeTab, setActive
                     <input
                       id="req-detail-phone"
                       type="tel"
+                      inputMode="numeric"
                       required
+                      maxLength={12}
+                      pattern="[0-9]{10,12}"
+                      title="Enter a 10-digit mobile number"
                       placeholder={t('profiles.formPhonePlace', '10-digit mobile phone', '10 అంకెల మొబైల్ నంబర్')}
                       value={requestPhone}
-                      onChange={(e) => setRequestPhone(e.target.value)}
+                      onChange={(e) => setRequestPhone(e.target.value.replace(/\D/g, '').slice(0, 12))}
                       className="w-full text-xs rounded-lg border border-stone-200 p-2.5 focus:outline-none focus:ring-1 focus:ring-maroon-900 bg-stone-50"
                     />
                   </div>
@@ -432,6 +430,39 @@ export default function ProfileShowcase({ onRegisterScroll, activeTab, setActive
               )}
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* Photo flash card */}
+      {photoProfile && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+          onClick={() => setPhotoProfile(null)}
+        >
+          <div
+            className="relative w-full max-w-xs bg-white rounded-2xl overflow-hidden shadow-2xl border border-gold-300/50"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setPhotoProfile(null)}
+              aria-label="Close"
+              className="absolute top-2.5 right-2.5 z-10 bg-black/40 hover:bg-black/60 text-white rounded-full p-1.5 transition-colors border-none cursor-pointer"
+            >
+              <X size={16} />
+            </button>
+            <img
+              src={photoProfile.imageUrl}
+              alt={`${photoProfile.community} ${photoProfile.gender}`}
+              referrerPolicy="no-referrer"
+              className="w-full aspect-square object-cover"
+            />
+            <div className="px-4 py-3 text-center bg-maroon-900 text-white">
+              <h3 className="font-serif font-bold text-base">
+                {photoProfile.community} {photoProfile.gender === 'Bride' ? t('profiles.brideSimp', 'Bride', 'వధువు') : t('profiles.groomSimp', 'Groom', 'వరుడు')}
+              </h3>
+              <p className="text-gold-200 text-xs mt-0.5">{displayRef(photoProfile.id)} · {photoProfile.age} {t('profiles.yrs', 'Yrs', 'సంవత్సరాలు')}</p>
+            </div>
           </div>
         </div>
       )}

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { INITIAL_PROFILES } from '../data';
+import React, { useState, useEffect } from 'react';
 import { Profile } from '../types';
 import { Lock, CheckCircle, HelpCircle, MapPin, Briefcase } from 'lucide-react';
 import ProfileCard from '../components/ProfileCard';
 import { useLanguage } from '../context/LanguageContext';
+import { fetchApprovedProfiles, submitLead } from '../lib/api';
+import { displayRef } from '../lib/format';
 
 interface ProfilesPageProps {
   navigateToPage: (page: string) => void;
@@ -18,38 +19,24 @@ export default function Profiles({ navigateToPage, activeGender, setActiveGender
   const [activeProfession, setActiveProfession] = useState<'All' | 'Software Professionals' | 'Government Employees' | 'Business Families'>('All');
   const [activeCaste, setActiveCaste] = useState<'All' | 'Reddy' | 'Kamma' | 'Kapu' | 'Goud' | 'Brahmin' | 'Arya Vysya' | 'Yadav' | 'Other'>('All');
   
-  // Load registrations from localStorage to display them on Profiles page
-  const [allProfiles, setAllProfiles] = useState<Profile[]>(() => {
-    //const saved = localStorage.getItem('tr_registrations');
-    const saved = null;
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        const mapped: Profile[] = parsed.map((reg: any) => ({
-          id: reg.id || `TRG-${Math.floor(1000 + Math.random() * 9000)}`,
-          gender: reg.role === 'Groom' ? 'Groom' : 'Bride',
-          age: Number(reg.age) || 28,
-          education: reg.education || 'Graduate',
-          profession: reg.profession || 'Professional',
-          location: reg.location || 'Hyderabad',
-          community: reg.community || 'Telugu',
-          height: "5'5\"",
-          gotram: reg.subCommunity || 'Vasishta',
-          nativePlace: reg.location || 'Telugu States',
-          star: 'Rohini',
-          imageUrl: reg.role === 'Groom' 
-            ? 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80'
-            : 'https://images.unsplash.com/photo-1594744803329-e58b31de215f?w=600&auto=format&fit=crop&q=80'
-        }));
-        const existingIds = new Set(INITIAL_PROFILES.map(p => p.id));
-        const filteredMapped = mapped.filter((p: Profile) => !existingIds.has(p.id));
-        return [...INITIAL_PROFILES, ...filteredMapped];
-      } catch (e) {
-        console.error(e);
-      }
-    }
-    return INITIAL_PROFILES;
-  });
+  // Load approved profiles from the backend API for public display.
+  const [allProfiles, setAllProfiles] = useState<Profile[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    fetchApprovedProfiles()
+      .then((profiles) => {
+        if (active) setAllProfiles(profiles);
+      })
+      .catch((err) => console.error('Failed to load profiles', err))
+      .finally(() => {
+        if (active) setIsLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // Request modal state
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
@@ -96,19 +83,22 @@ export default function Profiles({ navigateToPage, activeGender, setActiveGender
     return matchesGender && matchesLocation && matchesProfession && matchesCaste;
   });
 
-  const handleRequestSubmit = (e: React.FormEvent) => {
+  const handleRequestSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!requestName || !requestPhone || !selectedProfile) return;
 
-    const existingRequests = JSON.parse(localStorage.getItem('tr_profile_requests') || '[]');
-    existingRequests.push({
-      profileId: selectedProfile.id,
-      name: requestName,
-      phone: requestPhone,
-      relationship: requestRelationship,
-      timestamp: new Date().toISOString()
-    });
-    localStorage.setItem('tr_profile_requests', JSON.stringify(existingRequests));
+    // Persist the detail request as a lead in Supabase via the API.
+    try {
+      await submitLead({
+        source: 'profile_request',
+        full_name: requestName.trim(),
+        phone: requestPhone.trim(),
+        community: selectedProfile.community,
+        message: `Requested details for profile ${selectedProfile.id} (${selectedProfile.community} ${selectedProfile.gender}, ${selectedProfile.profession}). Relationship: ${requestRelationship}`,
+      });
+    } catch (err) {
+      console.error('Failed to submit profile request', err);
+    }
 
     setRequestSubmitted(true);
 
@@ -298,7 +288,11 @@ export default function Profiles({ navigateToPage, activeGender, setActiveGender
 
       {/* 3. Profiles List Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {filteredProfiles.length > 0 ? (
+        {isLoading ? (
+          <div className="text-center py-16 text-stone-400 text-sm">
+            {t('profiles.loading', 'Loading verified profiles…', 'ప్రొఫైల్స్ లోడ్ అవుతున్నాయి…')}
+          </div>
+        ) : filteredProfiles.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProfiles.map((profile) => (
               <ProfileCard 
@@ -378,7 +372,7 @@ export default function Profiles({ navigateToPage, activeGender, setActiveGender
           <div className="relative w-full max-w-md bg-white rounded-3xl border border-gold-300/40 shadow-2xl overflow-hidden animate-zoom-in">
             <div className="bg-maroon-900 text-white px-6 py-4">
               <h3 className="font-serif text-sm sm:text-base font-bold">
-                {t('profiles.reqDetailsTitle', 'Request Details:', 'వివరాల కొరకు అభ్యర్థన:')} {selectedProfile.id}
+                {t('profiles.reqDetailsTitle', 'Request Details:', 'వివరాల కొరకు అభ్యర్థన:')} {displayRef(selectedProfile.id)}
               </h3>
               <p className="text-xs text-maroon-200">
                 {selectedProfile.community} {selectedProfile.gender === 'Bride' ? t('profiles.brideSimp', 'Bride', 'వధువు') : t('profiles.groomSimp', 'Groom', 'వరుడు')} • {selectedProfile.age} {t('profiles.yrs', 'Yrs', 'సంవత్సరాలు')} • {selectedProfile.profession}
@@ -432,10 +426,14 @@ export default function Profiles({ navigateToPage, activeGender, setActiveGender
                     </label>
                     <input
                       type="tel"
+                      inputMode="numeric"
                       required
+                      maxLength={12}
+                      pattern="[0-9]{10,12}"
+                      title="Enter a 10-digit mobile number"
                       placeholder={t('profiles.formPhonePlace', '10-digit mobile phone', '10 అంకెల మొబైల్ నంబర్')}
                       value={requestPhone}
-                      onChange={(e) => setRequestPhone(e.target.value)}
+                      onChange={(e) => setRequestPhone(e.target.value.replace(/\D/g, '').slice(0, 12))}
                       className="w-full text-xs rounded-xl border border-stone-200 p-2.5 focus:outline-none focus:ring-1 focus:ring-maroon-900 bg-stone-50"
                     />
                   </div>

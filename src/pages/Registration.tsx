@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CheckCircle2, Lock, ShieldCheck, Heart, UserPlus2, Upload, Clock, Phone } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { submitProfile } from '../lib/api';
 
 interface RegisterPageProps {
   navigateToPage: (page: string) => void;
@@ -32,6 +33,8 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
 
   const [submitted, setSubmitted] = useState(false);
   const [generatedId, setGeneratedId] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -59,50 +62,56 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName || !phone) return;
+    setSubmitError('');
+    setSubmitting(true);
 
-    const randomizedId = 'TRG-' + Math.floor(1000 + Math.random() * 9000);
-    setGeneratedId(randomizedId);
+    const ageNum = parseInt(age, 10);
 
-    // Save registration details to localStorage
-    const savedRegistrations = JSON.parse(localStorage.getItem('tr_registrations') || '[]');
-    savedRegistrations.push({
-      id: randomizedId,
-      fullName,
-      role,
-      age,
-      dob,
-      community,
-      subCommunity,
-      location,
-      education,
-      profession,
-      income,
-      familyDetails,
-      matchDetails,
-      phone,
-      whatsapp,
-      email,
-      photoName: selectedPhotoName || 'No Photo Uploaded',
-      status: 'Pending Verification',
-      submittedAt: new Date().toLocaleDateString()
-    });
-    //localStorage.setItem('tr_registrations', JSON.stringify(savedRegistrations));
-
-    setSubmitted(true);
-    // Auto-scroll to top of container
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    // Instantly direct to WhatsApp with all filled data
-    const rawText = `Namaste Sri Lakshmi Matrimony, I registered my ${community || 'Telugu'} ${role} profile online.\n\n*Details:*\n- Profile ID: ${randomizedId}\n- Name: ${fullName}\n- Community: ${community}\n- Age: ${age} Yrs\n- Birth Date: ${dob}\n- Location: ${location}\n- Profession: ${profession}\n- Phone: ${phone}\n\nPlease expedite my matching review.`;
-    const encoded = encodeURIComponent(rawText);
-    const url = `https://wa.me/917386915677?text=${encoded}`;
     try {
-      window.open(url, '_blank', 'noopener,noreferrer');
+      // Create a PENDING profile in the backend for admin approval.
+      const { id } = await submitProfile({
+        full_name: fullName.trim(),
+        gender: role === 'Groom' ? 'Groom' : 'Bride',
+        age: Number.isFinite(ageNum) ? ageNum : undefined,
+        community: community || undefined,
+        location: location || undefined,
+        education: education || undefined,
+        profession: profession || undefined,
+        gotram: subCommunity || undefined,
+        phone: phone.trim(),
+        whatsapp: whatsapp || undefined,
+        dob: dob || undefined,
+        email: email || undefined,
+        income: income || undefined,
+        family_details: familyDetails || undefined,
+        match_details: matchDetails || undefined,
+      });
+
+      setGeneratedId(id);
+      setSubmitted(true);
+      // Auto-scroll to top of container
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Instantly direct to WhatsApp with all filled data
+      const rawText = `Namaste Sri Lakshmi Matrimony, I registered my ${community || 'Telugu'} ${role} profile online.\n\n*Details:*\n- Name: ${fullName}\n- Community: ${community}\n- Age: ${age} Yrs\n- Birth Date: ${dob}\n- Location: ${location}\n- Profession: ${profession}\n- Phone: ${phone}\n\nPlease expedite my matching review.`;
+      const encoded = encodeURIComponent(rawText);
+      const url = `https://wa.me/917386915677?text=${encoded}`;
+      try {
+        window.open(url, '_blank', 'noopener,noreferrer');
+      } catch (err) {
+        console.error('Popup failed', err);
+      }
     } catch (err) {
-      console.error("Popup failed", err);
+      setSubmitError(
+        err instanceof Error
+          ? err.message
+          : 'Could not submit your registration. Please try again.',
+      );
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -531,11 +540,20 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
                   </p>
                 </div>
 
+                {submitError && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs font-semibold text-red-700">
+                    ⚠️ {submitError}
+                  </div>
+                )}
+
                 <button
                   type="submit"
-                  className="w-full py-3.5 bg-[#10b981] hover:bg-[#059669] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md cursor-pointer transition-colors text-center"
+                  disabled={submitting}
+                  className="w-full py-3.5 bg-[#10b981] hover:bg-[#059669] disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md cursor-pointer transition-colors text-center"
                 >
-                  {t('reg.submitBtn', 'Submit Profile Details', 'ప్రొఫైల్ వివరాలను సమర్పించండి')}
+                  {submitting
+                    ? t('reg.submitting', 'Submitting…', 'సమర్పిస్తోంది…')
+                    : t('reg.submitBtn', 'Submit Profile Details', 'ప్రొఫైల్ వివరాలను సమర్పించండి')}
                 </button>
 
               </form>

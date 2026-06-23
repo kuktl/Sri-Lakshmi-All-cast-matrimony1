@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Profile } from '../types';
-import { Lock, CheckCircle, Briefcase, MapPin, FileText } from 'lucide-react';
+import { Lock, CheckCircle, Briefcase, FileText, Eye, X } from 'lucide-react';
+import { displayRef } from '../lib/format';
 
 interface ProfileCardProps {
   key?: string;
@@ -9,8 +10,11 @@ interface ProfileCardProps {
 }
 
 export default function ProfileCard({ profile, onRequestDetails }: ProfileCardProps) {
+  const [showPhoto, setShowPhoto] = useState(false);
+  const refCode = displayRef(profile.id);
+
   return (
-    <div 
+    <div
       id={`profile-card-${profile.id}`}
       className="bg-white rounded-2xl shadow-sm border border-stone-200/60 p-6 flex flex-col justify-between hover:shadow-xl transition-all duration-300 relative overflow-hidden group"
     >
@@ -21,13 +25,13 @@ export default function ProfileCard({ profile, onRequestDetails }: ProfileCardPr
       <div className="flex items-center justify-between border-b border-stone-100 pb-3 mb-4 pl-2">
         <div className="flex items-center gap-1.5">
           <span className="font-mono text-xs font-bold text-maroon-900 bg-maroon-50 px-2.5 py-1 rounded-md border border-maroon-100">
-            {profile.id}
+            {refCode}
           </span>
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
         </div>
         <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
           profile.gender === 'Bride'
-            ? 'text-pink-700 bg-pink-50 border-pink-200' 
+            ? 'text-pink-700 bg-pink-50 border-pink-200'
             : 'text-blue-700 bg-blue-50 border-blue-200'
         }`}>
           {profile.community} {profile.gender}
@@ -43,8 +47,8 @@ export default function ProfileCard({ profile, onRequestDetails }: ProfileCardPr
               <div className={`w-15 h-15 rounded-full overflow-hidden border-2 shadow-sm ${
                 profile.gender === 'Bride' ? 'border-maroon-800' : 'border-gold-500'
               }`}>
-                <img 
-                  src={profile.imageUrl} 
+                <img
+                  src={profile.imageUrl}
                   alt={`${profile.gender} portrait`}
                   className="w-full h-full object-cover filter brightness-[0.98]"
                   referrerPolicy="no-referrer"
@@ -104,16 +108,56 @@ export default function ProfileCard({ profile, onRequestDetails }: ProfileCardPr
         </div>
       </div>
 
-      {/* Request details button */}
-      <div className="pt-4 mt-1 border-t border-stone-100 pl-2">
+      {/* Action buttons */}
+      <div className="pt-4 mt-1 border-t border-stone-100 pl-2 flex gap-2">
+        <button
+          id={`view-btn-${profile.id}`}
+          onClick={() => setShowPhoto(true)}
+          className="flex-none py-2.5 px-3 font-semibold text-xs text-gold-700 hover:text-white bg-gold-50 hover:bg-gold-500 border border-gold-200 hover:border-transparent rounded-lg transition-all cursor-pointer flex items-center justify-center gap-1.5"
+        >
+          <Eye size={13} /> View
+        </button>
         <button
           id={`request-btn-${profile.id}`}
           onClick={() => onRequestDetails(profile)}
-          className="w-full py-2.5 px-4 font-semibold text-xs text-maroon-800 hover:text-white bg-maroon-50 hover:bg-maroon-800 border border-maroon-200 hover:border-transparent rounded-lg transition-all cursor-pointer flex items-center justify-center gap-1.5"
+          className="flex-1 py-2.5 px-4 font-semibold text-xs text-maroon-800 hover:text-white bg-maroon-50 hover:bg-maroon-800 border border-maroon-200 hover:border-transparent rounded-lg transition-all cursor-pointer flex items-center justify-center gap-1.5"
         >
           <FileText size={12} /> Request Profile Details
         </button>
       </div>
+
+      {/* Photo flash card */}
+      {showPhoto && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+          onClick={() => setShowPhoto(false)}
+        >
+          <div
+            className="relative w-full max-w-xs bg-white rounded-2xl overflow-hidden shadow-2xl border border-gold-300/50 animate-zoom-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowPhoto(false)}
+              aria-label="Close"
+              className="absolute top-2.5 right-2.5 z-10 bg-black/40 hover:bg-black/60 text-white rounded-full p-1.5 transition-colors border-none cursor-pointer"
+            >
+              <X size={16} />
+            </button>
+            <img
+              src={profile.imageUrl}
+              alt={`${profile.community} ${profile.gender}`}
+              referrerPolicy="no-referrer"
+              className="w-full aspect-square object-cover"
+            />
+            <div className="px-4 py-3 text-center bg-maroon-900 text-white">
+              <h3 className="font-serif font-bold text-base">
+                {profile.community} {profile.gender}
+              </h3>
+              <p className="text-gold-200 text-xs mt-0.5">{refCode} · {profile.age} Yrs</p>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
