@@ -146,6 +146,7 @@ export interface LeadSubmission {
   profession?: string;
   whatsapp?: string;
   message?: string;
+  profile_id?: string;
 }
 
 /** Submits a contact/enquiry lead (expert call, detail requests). */

@@ -90,7 +90,25 @@ publicRouter.post(
     const parsed = leadCreateSchema.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, zodMessage(parsed.error));
 
-    const payload = { source: 'registration', ...parsed.data };
+    // profile_id is not a leads column — pull it out and use it to enrich the
+    // message for detail requests so the admin sees which candidate (name +
+    // ref) was requested instead of a bare UUID.
+    const { profile_id, ...leadData } = parsed.data;
+    if (profile_id) {
+      const { data: prof } = await supabaseAdmin
+        .from('profiles')
+        .select('full_name, gender, community, profession')
+        .eq('id', profile_id)
+        .maybeSingle();
+      if (prof) {
+        const ref = `TRG-${profile_id.replace(/-/g, '').slice(0, 6).toUpperCase()}`;
+        const summary = [prof.community, prof.gender, prof.profession].filter(Boolean).join(' · ');
+        const who = `Requested profile: ${prof.full_name ?? 'Unknown'} (${ref}${summary ? ` — ${summary}` : ''}).`;
+        leadData.message = leadData.message ? `${who} ${leadData.message}` : who;
+      }
+    }
+
+    const payload = { source: 'registration', ...leadData };
     let { data, error } = await supabaseAdmin.from('leads').insert(payload).select('id').single();
 
     // Resilience: if the DB still has the older source CHECK constraint (e.g.

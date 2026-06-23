@@ -90,6 +90,9 @@ export const leadCreateSchema = z.object({
   phone: z.string().min(5).max(40),
   whatsapp: z.string().max(40).optional(),
   message: z.string().max(2000).optional(),
+  // Target profile for "profile_request" leads; used to enrich the message
+  // server-side with the candidate's name/ref. Not stored as a column.
+  profile_id: z.string().uuid().optional(),
 });
 
 export const leadUpdateSchema = z.object({
