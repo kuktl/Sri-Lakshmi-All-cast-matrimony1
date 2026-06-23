@@ -1,0 +1,42 @@
+@import 'tailwindcss';
+
+/* Brand design tokens — warm maroon/gold/cream, matching the public site so the
+   admin feels part of the same product rather than a generic dashboard. */
+@theme {
+  --color-cream-50: oklch(98.5% 0.01 85);
+  --color-cream-100: oklch(96% 0.02 85);
+  --color-cream-200: oklch(92% 0.03 85);
+
+  --color-maroon-50: oklch(95% 0.02 20);
+  --color-maroon-700: oklch(40% 0.13 22);
+  --color-maroon-800: oklch(34% 0.12 22);
+  --color-maroon-900: oklch(28% 0.10 22);
+  --color-maroon-950: oklch(22% 0.08 22);
+
+  --color-gold-300: oklch(85% 0.11 85);
+  --color-gold-400: oklch(80% 0.13 82);
+  --color-gold-500: oklch(74% 0.14 80);
+  --color-gold-600: oklch(66% 0.13 78);
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-cream-50);
+  color: var(--color-maroon-950);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle scrollbar to match the warm theme */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-gold-400) transparent;
+}

@@ -3,6 +3,7 @@ import { Heart, Compass, ShieldCheck, Target, Eye, Award, Check, X, Send } from 
 import { useLanguage } from '../context/LanguageContext';
 import KiranTVSection from '../components/KiranTVSection';
 import images from '../assets/images.jpg';
+import { submitLead } from '../lib/api';
 
 interface AboutPageProps {
   onTalkToExpertClick: () => void;
@@ -27,21 +28,23 @@ export default function About({ onTalkToExpertClick, navigateToPage }: AboutPage
     setIsContactModalOpen(true);
   };
 
-  const handleSubmitContact = (e: React.FormEvent) => {
+  const handleSubmitContact = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName || !mobileNumber || !fathersMobileNumber) return;
 
-    const existingEnquiries = JSON.parse(localStorage.getItem('tr_contacts') || '[]');
-    existingEnquiries.push({
-      fullName,
-      mobileNumber,
-      fathersMobileNumber,
-      whatWorks,
-      caste,
-      comments: `${comments} (Plan: ${selectedPlan})`,
-      timestamp: new Date().toISOString()
-    });
-    localStorage.setItem('tr_contacts', JSON.stringify(existingEnquiries));
+    // Persist the enquiry as a lead in Supabase via the API.
+    try {
+      await submitLead({
+        source: 'contact',
+        full_name: fullName.trim(),
+        phone: mobileNumber.trim(),
+        community: caste || undefined,
+        profession: whatWorks || undefined,
+        message: `Plan enquiry${selectedPlan ? ` (Plan: ${selectedPlan})` : ''}. Father's mobile: ${fathersMobileNumber}. ${comments}`.trim(),
+      });
+    } catch (err) {
+      console.error('Failed to submit enquiry', err);
+    }
 
     setSubmitted(true);
 

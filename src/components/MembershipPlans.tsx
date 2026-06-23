@@ -1,6 +1,7 @@
 import React from 'react';
 import { Check, X, Send } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { submitLead } from '../lib/api';
 
 export default function MembershipPlans() {
   const { language, t } = useLanguage();
@@ -20,22 +21,23 @@ export default function MembershipPlans() {
     setIsContactModalOpen(true);
   };
 
-  const handleSubmitContact = (e: React.FormEvent) => {
+  const handleSubmitContact = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName || !mobileNumber || !fathersMobileNumber) return;
 
-    // Save registration inquiry locally
-    const existingEnquiries = JSON.parse(localStorage.getItem('tr_contacts') || '[]');
-    existingEnquiries.push({
-      fullName,
-      mobileNumber,
-      fathersMobileNumber,
-      whatWorks,
-      caste,
-      comments: `${comments} (Plan: ${selectedPlan})`,
-      timestamp: new Date().toISOString()
-    });
-    localStorage.setItem('tr_contacts', JSON.stringify(existingEnquiries));
+    // Persist the membership enquiry as a lead in Supabase via the API.
+    try {
+      await submitLead({
+        source: 'contact',
+        full_name: fullName.trim(),
+        phone: mobileNumber.trim(),
+        community: caste || undefined,
+        profession: whatWorks || undefined,
+        message: `Membership enquiry${selectedPlan ? ` (Plan: ${selectedPlan})` : ''}. Father's mobile: ${fathersMobileNumber}. ${comments}`.trim(),
+      });
+    } catch (err) {
+      console.error('Failed to submit enquiry', err);
+    }
 
     setSubmitted(true);
     

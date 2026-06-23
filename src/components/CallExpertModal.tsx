@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Phone, User, Calendar, CheckCircle } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { submitLead } from '../lib/api';
 
 interface CallExpertModalProps {
   isOpen: boolean;
@@ -16,18 +17,26 @@ export default function CallExpertModal({ isOpen, onClose }: CallExpertModalProp
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !phone) return;
-    
-    // Simulate API request persistence in localStorage
-    const callbackRequests = JSON.parse(localStorage.getItem('tr_callback_requests') || '[]');
-    callbackRequests.push({ name, phone, preferredTime, timestamp: new Date().toISOString() });
-    localStorage.setItem('tr_callback_requests', JSON.stringify(callbackRequests));
+
+    const timeStr = preferredTime || 'Anytime (9 AM to 8 PM)';
+
+    // Persist the callback request as a lead in Supabase via the API.
+    try {
+      await submitLead({
+        source: 'expert_call',
+        full_name: name.trim(),
+        phone: phone.trim(),
+        message: `Callback request. Preferred time: ${timeStr}`,
+      });
+    } catch (err) {
+      console.error('Failed to submit callback request', err);
+    }
 
     setSubmitted(true);
 
-    const timeStr = preferredTime || 'Anytime (9 AM to 8 PM)';
     const text = `Namaste Sri Lakshmi All Caste Matrimony,\nI would like to request a callback from a Matchmaking Expert:\n\n*My Details:*\n- Name: ${name}\n- Phone: ${phone}\n- Preferred Time: ${timeStr}`;
     const encoded = encodeURIComponent(text);
     const url = `https://wa.me/919121594223?text=${encoded}`;

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Phone, MessageSquare, Mail, MapPin, Clock, Send, Check } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import FAQAccordion from '../components/FAQAccordion';
+import { submitLead } from '../lib/api';
 
 interface ContactPageProps {
   navigateToPage: (page: string) => void;
@@ -17,22 +18,23 @@ export default function Contact({ navigateToPage }: ContactPageProps) {
   const [submitted, setSubmitted] = useState(false);
   const { language, t } = useLanguage();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName || !mobileNumber || !fathersMobileNumber) return;
 
-    // Save contact enquiry locally
-    const existingEnquiries = JSON.parse(localStorage.getItem('tr_contacts') || '[]');
-    existingEnquiries.push({
-      fullName,
-      mobileNumber,
-      fathersMobileNumber,
-      whatWorks,
-      caste,
-      comments,
-      timestamp: new Date().toISOString()
-    });
-    localStorage.setItem('tr_contacts', JSON.stringify(existingEnquiries));
+    // Persist the enquiry as a lead in Supabase via the API.
+    try {
+      await submitLead({
+        source: 'contact',
+        full_name: fullName.trim(),
+        phone: mobileNumber.trim(),
+        community: caste || undefined,
+        profession: whatWorks || undefined,
+        message: `Match enquiry. Father's mobile: ${fathersMobileNumber}. ${comments}`.trim(),
+      });
+    } catch (err) {
+      console.error('Failed to submit enquiry', err);
+    }
 
     setSubmitted(true);
 
