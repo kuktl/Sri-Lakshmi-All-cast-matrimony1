@@ -4,7 +4,7 @@ import { Lock, CheckCircle, HelpCircle, MapPin, Briefcase } from 'lucide-react';
 import ProfileCard from '../components/ProfileCard';
 import { useLanguage } from '../context/LanguageContext';
 import { fetchApprovedProfiles, submitLead } from '../lib/api';
-import { displayRef } from '../lib/format';
+import { profileRef } from '../lib/format';
 import { PROFESSION_OPTIONS } from '../lib/options';
 
 interface ProfilesPageProps {
@@ -321,7 +321,7 @@ export default function Profiles({ navigateToPage, activeGender, setActiveGender
           <div className="relative w-full max-w-md bg-white rounded-3xl border border-gold-300/40 shadow-2xl overflow-hidden animate-zoom-in">
             <div className="bg-maroon-900 text-white px-6 py-4">
               <h3 className="font-serif text-sm sm:text-base font-bold">
-                {t('profiles.reqDetailsTitle', 'Request Details:', 'వివరాల కొరకు అభ్యర్థన:')} {displayRef(selectedProfile.id)}
+                {t('profiles.reqDetailsTitle', 'Request Details:', 'వివరాల కొరకు అభ్యర్థన:')} {profileRef(selectedProfile)}
               </h3>
               <p className="text-xs text-maroon-200">
                 {selectedProfile.community} {selectedProfile.gender === 'Bride' ? t('profiles.brideSimp', 'Bride', 'వధువు') : t('profiles.groomSimp', 'Groom', 'వరుడు')} • {selectedProfile.age} {t('profiles.yrs', 'Yrs', 'సంవత్సరాలు')} • {selectedProfile.profession}

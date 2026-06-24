@@ -33,7 +33,7 @@ export function ResourceForm({ def, initial, onChange }: ResourceFormProps) {
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-      {def.fields.map((f) => {
+      {def.fields.filter((f) => !f.readOnly).map((f) => {
         const value = state[f.key];
         const wide = f.type === 'textarea' || f.type === 'stringlist' || f.type === 'image';
         return (

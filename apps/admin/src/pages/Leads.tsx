@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Search } from 'lucide-react';
 import { api } from '../lib/api';
 import { Button, PageHeader, Spinner, EmptyState, Badge } from '../components/ui';
 
@@ -40,6 +40,7 @@ export function Leads() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sourceFilter, setSourceFilter] = useState<string>('');
+  const [query, setQuery] = useState('');
 
   const load = async (): Promise<void> => {
     setLoading(true);
@@ -80,7 +81,14 @@ export function Leads() {
     (a, b) => knownOrder.indexOf(a) - knownOrder.indexOf(b),
   );
   const countFor = (s: string): number => leads.filter((l) => l.source === s).length;
-  const displayed = sourceFilter ? leads.filter((l) => l.source === sourceFilter) : leads;
+  const q = query.trim().toLowerCase();
+  const displayed = leads
+    .filter((l) => !sourceFilter || l.source === sourceFilter)
+    .filter((l) =>
+      !q ||
+      [l.full_name, l.phone, l.message, l.community, l.location]
+        .some((v) => (v ?? '').toLowerCase().includes(q)),
+    );
 
   return (
     <div>
@@ -92,6 +100,17 @@ export function Leads() {
         <EmptyState message="No leads yet. Enquiries from every website form appear here." />
       ) : (
         <>
+          {/* Search by profile ID (SL-0001), name, phone, or message */}
+          <div className="relative mb-4 max-w-sm">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-maroon-700/40" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search by ID (SL-0001), name, phone…"
+              className="w-full rounded-lg border border-cream-200 bg-white py-2 pl-9 pr-3 text-sm text-maroon-950 outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-300/40"
+            />
+          </div>
+
           {/* Filter by which page the enquiry came from */}
           <div className="mb-4 flex flex-wrap items-center gap-2">
             <button

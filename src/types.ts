@@ -1,5 +1,6 @@
 export interface Profile {
   id: string;
+  refNo?: number;
   gender: 'Bride' | 'Groom';
   age: number;
   education: string;

@@ -3,7 +3,7 @@ import { Profile } from '../types';
 import { Lock, FileText, CheckCircle, Search, Filter, HelpCircle, Heart, MapPin, Briefcase, Eye, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { fetchApprovedProfiles, submitLead } from '../lib/api';
-import { displayRef } from '../lib/format';
+import { profileRef } from '../lib/format';
 
 interface ProfileShowcaseProps {
   onRegisterScroll: () => void;
@@ -184,7 +184,7 @@ export default function ProfileShowcase({ onRegisterScroll, activeTab, setActive
                 <div className="flex items-center justify-between border-b border-stone-100 pb-3 mb-4 pl-2 font-sans">
                   <div className="flex items-center gap-1.5">
                     <span className="font-mono text-xs font-bold text-maroon-900 bg-maroon-50 px-2.5 py-1 rounded-md border border-maroon-100">
-                      {displayRef(profile.id)}
+                      {profileRef(profile)}
                     </span>
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                   </div>
@@ -324,7 +324,7 @@ export default function ProfileShowcase({ onRegisterScroll, activeTab, setActive
             {/* Header */}
             <div className="bg-maroon-900 px-6 py-4.5 text-white">
               <h3 className="font-serif text-base font-bold tracking-wide">
-                {t('profiles.reqDetailsTitle', 'Request Details:', 'వివరాల కొరకు అభ్యర్థన:')} {displayRef(selectedProfile.id)}
+                {t('profiles.reqDetailsTitle', 'Request Details:', 'వివరాల కొరకు అభ్యర్థన:')} {profileRef(selectedProfile)}
               </h3>
               <p className="text-xs text-maroon-200">
                 {selectedProfile.community} {selectedProfile.gender === 'Bride' ? t('profiles.brideSimp', 'Bride', 'వధువు') : t('profiles.groomSimp', 'Groom', 'వరుడు')} • {selectedProfile.age} {t('profiles.yrs', 'Yrs', 'సంవత్సరాలు')} • {selectedProfile.profession}
@@ -462,7 +462,7 @@ export default function ProfileShowcase({ onRegisterScroll, activeTab, setActive
               <h3 className="font-serif font-bold text-base">
                 {photoProfile.community} {photoProfile.gender === 'Bride' ? t('profiles.brideSimp', 'Bride', 'వధువు') : t('profiles.groomSimp', 'Groom', 'వరుడు')}
               </h3>
-              <p className="text-gold-200 text-xs mt-0.5">{displayRef(photoProfile.id)} · {photoProfile.age} {t('profiles.yrs', 'Yrs', 'సంవత్సరాలు')}</p>
+              <p className="text-gold-200 text-xs mt-0.5">{profileRef(photoProfile)} · {photoProfile.age} {t('profiles.yrs', 'Yrs', 'సంవత్సరాలు')}</p>
             </div>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Plus, Pencil, Trash2, Check, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, Check, X, Search } from 'lucide-react';
 import type { ResourceDef } from '../resources';
 import { api } from '../lib/api';
 import { fieldsInList } from '../lib/form';
@@ -9,11 +9,14 @@ import { ResourceForm } from './ResourceForm';
 
 type Row = Record<string, unknown> & { id: string };
 
+const formatSeries = (n: number): string => `SL-${String(n).padStart(4, '0')}`;
+
 export function ResourceCrud({ def }: { def: ResourceDef }) {
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filterValue, setFilterValue] = useState<string>('');
+  const [query, setQuery] = useState('');
 
   const [editing, setEditing] = useState<Row | null>(null);
   const [creating, setCreating] = useState(false);
@@ -99,9 +102,26 @@ export function ResourceCrud({ def }: { def: ResourceDef }) {
 
   const columns = fieldsInList(def);
   const filterField = def.filterField;
-  const displayedRows = filterField && filterValue
-    ? rows.filter((r) => String(r[filterField.key] ?? '') === filterValue)
-    : rows;
+  const seriesField = def.fields.find((f) => f.type === 'seriesid');
+
+  const matchesQuery = (r: Row): boolean => {
+    const q = query.trim().toLowerCase();
+    if (!q) return true;
+    const parts: string[] = [];
+    if (seriesField && r[seriesField.key] != null) {
+      parts.push(formatSeries(Number(r[seriesField.key])).toLowerCase());
+      parts.push(String(r[seriesField.key]));
+    }
+    for (const f of def.fields) {
+      const v = r[f.key];
+      if (typeof v === 'string') parts.push(v.toLowerCase());
+    }
+    return parts.some((p) => p.includes(q));
+  };
+
+  const displayedRows = rows
+    .filter((r) => !(filterField && filterValue) || String(r[filterField.key] ?? '') === filterValue)
+    .filter(matchesQuery);
   const countFor = (value: string): number =>
     filterField ? rows.filter((r) => String(r[filterField.key] ?? '') === value).length : 0;
 
@@ -116,6 +136,18 @@ export function ResourceCrud({ def }: { def: ResourceDef }) {
           </Button>
         }
       />
+
+      {!loading && rows.length > 0 && (
+        <div className="relative mb-4 max-w-sm">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-maroon-700/40" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={seriesField ? 'Search by ID (e.g. SL-0001) or name…' : 'Search…'}
+            className="w-full rounded-lg border border-cream-200 bg-white py-2 pl-9 pr-3 text-sm text-maroon-950 outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-300/40"
+          />
+        </div>
+      )}
 
       {filterField && !loading && (
         <div className="mb-4 flex flex-wrap items-center gap-2">
@@ -238,6 +270,9 @@ export function ResourceCrud({ def }: { def: ResourceDef }) {
 function renderCell(value: unknown, type: string): React.ReactNode {
   if (type === 'boolean') return value ? <Badge tone="green">Yes</Badge> : <Badge>No</Badge>;
   if (value === null || value === undefined || value === '') return <span className="text-maroon-700/30">—</span>;
+  if (type === 'seriesid') {
+    return <span className="font-mono font-semibold text-maroon-900">{formatSeries(Number(value))}</span>;
+  }
   if (type === 'select' && typeof value === 'string') {
     const tone = value === 'approved' ? 'green' : value === 'rejected' ? 'red' : value === 'pending' ? 'amber' : 'neutral';
     return <Badge tone={tone}>{value}</Badge>;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Profile } from '../types';
 import { Lock, CheckCircle, Briefcase, FileText, Eye, X } from 'lucide-react';
-import { displayRef } from '../lib/format';
+import { profileRef } from '../lib/format';
 
 interface ProfileCardProps {
   key?: string;
@@ -11,7 +11,7 @@ interface ProfileCardProps {
 
 export default function ProfileCard({ profile, onRequestDetails }: ProfileCardProps) {
   const [showPhoto, setShowPhoto] = useState(false);
-  const refCode = displayRef(profile.id);
+  const refCode = profileRef(profile);
 
   return (
     <div

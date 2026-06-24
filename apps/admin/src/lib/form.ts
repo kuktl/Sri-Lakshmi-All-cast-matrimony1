@@ -22,6 +22,7 @@ export function initFormState(def: ResourceDef, row: Record<string, unknown> | n
 export function buildPayload(def: ResourceDef, state: FormState): Record<string, unknown> {
   const payload: Record<string, unknown> = {};
   for (const f of def.fields) {
+    if (f.readOnly) continue; // never send generated/read-only fields (e.g. ref_no)
     const value = state[f.key];
     if (f.type === 'boolean') {
       payload[f.key] = Boolean(value);

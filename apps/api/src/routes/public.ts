@@ -26,7 +26,7 @@ publicRouter.get(
     const gender = req.query.gender;
     let query = supabaseAdmin
       .from('profiles')
-      .select('id, gender, age, education, profession, location, community, height, gotram, native_place, star, image_url')
+      .select('id, ref_no, gender, age, education, profession, location, community, height, gotram, native_place, star, image_url')
       .eq('status', 'approved')
       .order('created_at', { ascending: false });
 
@@ -97,13 +97,13 @@ publicRouter.post(
     if (profile_id) {
       const { data: prof } = await supabaseAdmin
         .from('profiles')
-        .select('full_name, gender, community, profession')
+        .select('ref_no, full_name, gender, community, profession')
         .eq('id', profile_id)
         .maybeSingle();
       if (prof) {
-        const ref = `TRG-${profile_id.replace(/-/g, '').slice(0, 6).toUpperCase()}`;
+        const ref = prof.ref_no != null ? `SL-${String(prof.ref_no).padStart(4, '0')}` : 'SL-????';
         const summary = [prof.community, prof.gender, prof.profession].filter(Boolean).join(' · ');
-        const who = `Requested profile: ${prof.full_name ?? 'Unknown'} (${ref}${summary ? ` — ${summary}` : ''}).`;
+        const who = `Requested profile: ${ref} — ${prof.full_name ?? 'Unknown'}${summary ? ` (${summary})` : ''}.`;
         leadData.message = leadData.message ? `${who} ${leadData.message}` : who;
       }
     }

@@ -1,6 +1,6 @@
 import { Users, type LucideIcon } from 'lucide-react';
 
-export type FieldType = 'text' | 'textarea' | 'number' | 'boolean' | 'select' | 'image' | 'stringlist';
+export type FieldType = 'text' | 'textarea' | 'number' | 'boolean' | 'select' | 'image' | 'stringlist' | 'seriesid';
 
 export interface Field {
   key: string;
@@ -10,6 +10,8 @@ export interface Field {
   required?: boolean;
   /** Show this column in the list table. */
   inList?: boolean;
+  /** Read-only fields (e.g. generated ids) are shown but not editable. */
+  readOnly?: boolean;
 }
 
 export interface FilterOption {
@@ -43,6 +45,7 @@ export const RESOURCES: ResourceDef[] = [
       ],
     },
     fields: [
+      { key: 'ref_no', label: 'ID', type: 'seriesid', inList: true, readOnly: true },
       { key: 'full_name', label: 'Full name', type: 'text', required: true, inList: true },
       { key: 'gender', label: 'Gender', type: 'select', options: ['Bride', 'Groom'], required: true, inList: true },
       { key: 'status', label: 'Status', type: 'select', options: ['pending', 'approved', 'rejected'], inList: true },

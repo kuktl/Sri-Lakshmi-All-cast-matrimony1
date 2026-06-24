@@ -43,6 +43,7 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
 /** Raw approved-profile shape returned by the public API (snake_case). */
 interface ApiProfile {
   id: string;
+  ref_no: number | null;
   gender: 'Bride' | 'Groom';
   age: number | null;
   education: string | null;
@@ -65,6 +66,7 @@ const FALLBACK_IMAGE: Record<'Bride' | 'Groom', string> = {
 function mapProfile(p: ApiProfile): Profile {
   return {
     id: p.id,
+    refNo: p.ref_no ?? undefined,
     gender: p.gender,
     age: p.age ?? 0,
     education: p.education || 'Graduate',
