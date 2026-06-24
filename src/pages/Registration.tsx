@@ -60,6 +60,8 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
   const [education, setEducation] = useState('');
   const [profession, setProfession] = useState('');
   const [income, setIncome] = useState('');
+  const [nativePlace, setNativePlace] = useState('');
+  const [familyOccupation, setFamilyOccupation] = useState('');
   const [familyDetails, setFamilyDetails] = useState('');
   const [matchDetails, setMatchDetails] = useState('');
   const [phone, setPhone] = useState('');
@@ -191,6 +193,8 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
         dob: dob || undefined,
         email: email || undefined,
         income: income || undefined,
+        native_place: nativePlace || undefined,
+        family_occupation: familyOccupation || undefined,
         family_details: familyDetails || undefined,
         match_details: matchDetails || undefined,
         image_url: imageUrl,
@@ -319,6 +323,8 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
                         setEducation('');
                         setProfession('');
                         setIncome('');
+                        setNativePlace('');
+                        setFamilyOccupation('');
                         setFamilyDetails('');
                         setMatchDetails('');
                         setPhone('');
@@ -507,6 +513,34 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
                       placeholder="e.g. 12 Lakhs Per Annum / $110k USD"
                       value={income}
                       onChange={(e) => setIncome(e.target.value)}
+                      className="w-full text-xs rounded-xl border border-stone-200 p-3 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-stone-50"
+                    />
+                  </div>
+                </div>
+
+                {/* Native Place & Family Occupation */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[11px] font-bold text-stone-700 uppercase mb-1">
+                      {t('reg.nativePlace', 'Native Place', 'స్వస్థలం')}
+                    </label>
+                    <input
+                      type="text"
+                      placeholder={t('reg.nativePlacePlaceholder', 'e.g. Warangal, Telangana', 'ఉదా. వరంగల్, తెలంగాణ')}
+                      value={nativePlace}
+                      onChange={(e) => setNativePlace(e.target.value)}
+                      className="w-full text-xs rounded-xl border border-stone-200 p-3 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-stone-50"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-stone-700 uppercase mb-1">
+                      {t('reg.familyOccupation', 'Family Occupation', 'కుటుంబ వృత్తి')}
+                    </label>
+                    <input
+                      type="text"
+                      placeholder={t('reg.familyOccupationPlaceholder', 'e.g. Agriculture, Business', 'ఉదా. వ్యవసాయం, వ్యాపారం')}
+                      value={familyOccupation}
+                      onChange={(e) => setFamilyOccupation(e.target.value)}
                       className="w-full text-xs rounded-xl border border-stone-200 p-3 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-stone-50"
                     />
                   </div>

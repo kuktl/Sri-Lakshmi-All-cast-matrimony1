@@ -11,6 +11,9 @@ export interface Profile {
   gotram?: string;
   nativePlace?: string;
   star?: string;
+  income?: string;
+  familyOccupation?: string;
+  fullName?: string;
   imageUrl?: string;
 }
 

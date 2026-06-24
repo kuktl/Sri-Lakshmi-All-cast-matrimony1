@@ -44,6 +44,7 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
 interface ApiProfile {
   id: string;
   ref_no: number | null;
+  full_name: string | null;
   gender: 'Bride' | 'Groom';
   age: number | null;
   education: string | null;
@@ -54,6 +55,8 @@ interface ApiProfile {
   gotram: string | null;
   native_place: string | null;
   star: string | null;
+  income: string | null;
+  family_occupation: string | null;
   image_url: string | null;
 }
 
@@ -67,6 +70,7 @@ function mapProfile(p: ApiProfile): Profile {
   return {
     id: p.id,
     refNo: p.ref_no ?? undefined,
+    fullName: p.full_name || undefined,
     gender: p.gender,
     age: p.age ?? 0,
     education: p.education || 'Graduate',
@@ -77,6 +81,8 @@ function mapProfile(p: ApiProfile): Profile {
     gotram: p.gotram || 'Vasishta',
     nativePlace: p.native_place || p.location || 'Telugu States',
     star: p.star || 'Rohini',
+    income: p.income || undefined,
+    familyOccupation: p.family_occupation || undefined,
     imageUrl: p.image_url || FALLBACK_IMAGE[p.gender],
   };
 }
@@ -101,6 +107,8 @@ export interface ProfileSubmission {
   dob?: string;
   email?: string;
   income?: string;
+  native_place?: string;
+  family_occupation?: string;
   family_details?: string;
   match_details?: string;
   image_url?: string;

@@ -26,7 +26,7 @@ publicRouter.get(
     const gender = req.query.gender;
     let query = supabaseAdmin
       .from('profiles')
-      .select('id, ref_no, gender, age, education, profession, location, community, height, gotram, native_place, star, image_url')
+      .select('id, ref_no, full_name, gender, age, education, profession, location, community, height, gotram, native_place, star, income, family_occupation, image_url')
       .eq('status', 'approved')
       .order('created_at', { ascending: false });
 

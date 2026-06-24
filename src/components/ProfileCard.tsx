@@ -12,6 +12,7 @@ interface ProfileCardProps {
 export default function ProfileCard({ profile, onRequestDetails }: ProfileCardProps) {
   const [showPhoto, setShowPhoto] = useState(false);
   const refCode = profileRef(profile);
+  const displayName = profile.fullName || `${profile.community} ${profile.gender}`;
 
   return (
     <div
@@ -34,7 +35,7 @@ export default function ProfileCard({ profile, onRequestDetails }: ProfileCardPr
             ? 'text-pink-700 bg-pink-50 border-pink-200'
             : 'text-blue-700 bg-blue-50 border-blue-200'
         }`}>
-          {profile.community} {profile.gender}
+          {profile.gender}
         </span>
       </div>
 
@@ -68,43 +69,45 @@ export default function ProfileCard({ profile, onRequestDetails }: ProfileCardPr
             </div>
           </div>
 
-          <div className="space-y-0.5">
-            <h3 className="font-serif font-bold text-base text-stone-850">
-              {profile.community} {profile.gender}, {profile.age} Yrs
+          <div className="space-y-0.5 min-w-0">
+            <h3 className="font-serif font-bold text-base text-stone-850 truncate" title={displayName}>
+              {displayName}{profile.age ? `, ${profile.age} Yrs` : ''}
             </h3>
-            <p className="text-stone-500 text-xs font-medium flex items-center gap-1">
-              <Briefcase size={12} className="text-stone-400" />
-              {profile.education}
+            <p className="text-maroon-800 text-xs font-bold">
+              {profile.community}
             </p>
-            <p className="text-maroon-800 text-xs font-semibold">
-              {profile.profession}
-            </p>
+            {profile.education && (
+              <p className="text-stone-500 text-xs font-medium flex items-center gap-1">
+                <Briefcase size={12} className="text-stone-400" />
+                {profile.education}
+              </p>
+            )}
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-y-2 gap-x-1 bg-stone-50/70 p-3 rounded-xl border border-stone-100 text-[11px] text-stone-600">
           <div>
-            <span className="text-stone-400 block font-medium">Height:</span>
-            <span className="font-semibold text-stone-700">{profile.height || '5\'5"'}</span>
+            <span className="text-stone-400 block font-medium">Job:</span>
+            <span className="font-semibold text-stone-700 truncate block max-w-full" title={profile.profession}>{profile.profession || '—'}</span>
           </div>
           <div>
-            <span className="text-stone-400 block font-medium">Gotram:</span>
-            <span className="font-semibold text-stone-700">{profile.gotram || 'Verified'}</span>
+            <span className="text-stone-400 block font-medium">Salary:</span>
+            <span className="font-semibold text-stone-700 truncate block max-w-full" title={profile.income}>{profile.income || 'On request'}</span>
           </div>
           <div>
             <span className="text-stone-400 block font-medium">Native Place:</span>
-            <span className="font-semibold text-stone-700 truncate block max-w-full" title={profile.nativePlace}>{profile.nativePlace || 'Telangana'}</span>
+            <span className="font-semibold text-stone-700 truncate block max-w-full" title={profile.nativePlace}>{profile.nativePlace || '—'}</span>
           </div>
           <div>
-            <span className="text-stone-400 block font-medium">Star (Nakshatram):</span>
-            <span className="font-semibold text-stone-700">{profile.star || 'Matching'}</span>
+            <span className="text-stone-400 block font-medium">Family Occupation:</span>
+            <span className="font-semibold text-stone-700 truncate block max-w-full" title={profile.familyOccupation}>{profile.familyOccupation || '—'}</span>
           </div>
         </div>
 
         {/* Privacy locked block indicator */}
         <div className="flex items-center gap-1.5 text-[10px] text-stone-400 bg-stone-50 p-2 rounded-lg border border-stone-100">
           <Lock size={12} className="text-orange-400 animate-pulse" />
-          <span>Family background & contact details locked.</span>
+          <span>Contact &amp; horoscope details shared after request.</span>
         </div>
       </div>
 
@@ -151,9 +154,9 @@ export default function ProfileCard({ profile, onRequestDetails }: ProfileCardPr
             />
             <div className="px-4 py-3 text-center bg-maroon-900 text-white">
               <h3 className="font-serif font-bold text-base">
-                {profile.community} {profile.gender}
+                {displayName}
               </h3>
-              <p className="text-gold-200 text-xs mt-0.5">{refCode} · {profile.age} Yrs</p>
+              <p className="text-gold-200 text-xs mt-0.5">{refCode} · {profile.community} · {profile.age} Yrs</p>
             </div>
           </div>
         </div>

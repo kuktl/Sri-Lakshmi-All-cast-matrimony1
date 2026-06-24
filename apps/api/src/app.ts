@@ -6,7 +6,7 @@ import { publicRouter } from './routes/public.js';
 import { adminRouter } from './routes/admin.js';
 
 // Bump this when forcing a redeploy / to verify which build is live.
-const BUILD = '2026-06-24-series-id';
+const BUILD = '2026-06-24-profile-fields';
 
 /**
  * The configured Express app, without starting a server. Imported by the local
