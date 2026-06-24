@@ -1,6 +1,32 @@
 import { Users, type LucideIcon } from 'lucide-react';
 
-export type FieldType = 'text' | 'textarea' | 'number' | 'boolean' | 'select' | 'image' | 'stringlist' | 'seriesid';
+export type FieldType =
+  | 'text'
+  | 'textarea'
+  | 'number'
+  | 'boolean'
+  | 'select'
+  | 'image'
+  | 'stringlist'
+  | 'seriesid'
+  | 'date';
+
+// Keep in sync with the public registration form (src/lib/options.ts) so a
+// profile's designation is captured identically on both sides.
+export const PROFESSION_OPTIONS = [
+  'Software / IT',
+  'Government Employee',
+  'Private Employee',
+  'Business / Self-Employed',
+  'Doctor / Medical',
+  'Engineer',
+  'Teacher / Professor',
+  'Bank / Finance',
+  'Defence / Police',
+  'Farmer / Agriculture',
+  'Abroad / NRI',
+  'Others',
+];
 
 export interface Field {
   key: string;
@@ -49,7 +75,7 @@ export const RESOURCES: ResourceDef[] = [
       { key: 'full_name', label: 'Full name', type: 'text', required: true, inList: true },
       { key: 'gender', label: 'Gender', type: 'select', options: ['Bride', 'Groom'], required: true, inList: true },
       { key: 'status', label: 'Status', type: 'select', options: ['pending', 'approved', 'rejected'], inList: true },
-      { key: 'age', label: 'Age', type: 'number', inList: true },
+      { key: 'age', label: 'Age (auto from DOB)', type: 'number', inList: true },
       {
         key: 'community',
         label: 'Community',
@@ -75,14 +101,14 @@ export const RESOURCES: ResourceDef[] = [
       },
       { key: 'location', label: 'Location', type: 'text', inList: true },
       { key: 'education', label: 'Education', type: 'text' },
-      { key: 'profession', label: 'Profession', type: 'text' },
+      { key: 'profession', label: 'Designation', type: 'select', options: PROFESSION_OPTIONS, inList: true },
       { key: 'height', label: 'Height', type: 'text' },
       { key: 'gotram', label: 'Gotram', type: 'text' },
       { key: 'native_place', label: 'Native place', type: 'text' },
       { key: 'star', label: 'Star', type: 'text' },
       { key: 'phone', label: 'Phone', type: 'text' },
       { key: 'whatsapp', label: 'WhatsApp', type: 'text' },
-      { key: 'dob', label: 'Date of birth', type: 'text' },
+      { key: 'dob', label: 'Date of birth', type: 'date' },
       { key: 'email', label: 'Email', type: 'text' },
       { key: 'income', label: 'Income', type: 'text' },
       { key: 'image_url', label: 'Photo URL', type: 'image' },

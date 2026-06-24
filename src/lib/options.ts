@@ -17,3 +17,24 @@ export const PROFESSION_OPTIONS = [
 ] as const;
 
 export type ProfessionOption = (typeof PROFESSION_OPTIONS)[number];
+
+// Canonical community/caste list — shared by the registration form and the
+// Profiles filter, and kept identical to the admin profile form, so a
+// candidate's community is captured and filtered consistently everywhere.
+export const CASTE_OPTIONS = [
+  'Reddy',
+  'Kamma',
+  'Kapu',
+  'Goud',
+  'Brahmin',
+  'Naidu',
+  'Velama',
+  'Arya Vysya',
+  'Yadav',
+  'Padmashali',
+  'Balija',
+  'Mudiraj',
+  'Mala',
+  'Madiga',
+  'Other',
+] as const;

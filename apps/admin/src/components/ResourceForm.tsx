@@ -6,6 +6,18 @@ import { ImageUploadField } from './ImageUploadField';
 const inputClass =
   'w-full rounded-lg border border-cream-200 bg-white px-3 py-2 text-sm text-maroon-950 outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-300/40';
 
+/** Whole-year age from an ISO date string, or null if not parseable. */
+function ageFromDob(dobStr: string): number | null {
+  if (!dobStr) return null;
+  const dob = new Date(dobStr);
+  if (Number.isNaN(dob.getTime())) return null;
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const m = today.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age -= 1;
+  return age;
+}
+
 interface ResourceFormProps {
   def: ResourceDef;
   initial: Record<string, unknown> | null;
@@ -26,7 +38,12 @@ export function ResourceForm({ def, initial, onChange }: ResourceFormProps) {
   }, []);
 
   const update = (key: string, value: string | boolean): void => {
-    const next = { ...state, [key]: value };
+    let next = { ...state, [key]: value };
+    // Keep age in sync with DOB, exactly like the public registration form.
+    if (key === 'dob' && typeof value === 'string') {
+      const age = ageFromDob(value);
+      if (age !== null) next = { ...next, age: String(age) };
+    }
     setState(next);
     onChange(buildPayload(def, next));
   };
@@ -61,6 +78,8 @@ export function ResourceForm({ def, initial, onChange }: ResourceFormProps) {
                   </option>
                 ))}
               </select>
+            ) : f.type === 'date' ? (
+              <input type="date" value={String(value)} onChange={(e) => update(f.key, e.target.value)} className={inputClass} />
             ) : (
               <input
                 type={f.type === 'number' ? 'number' : 'text'}

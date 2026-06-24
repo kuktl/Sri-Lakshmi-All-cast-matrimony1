@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { CheckCircle2, Lock, ShieldCheck, Heart, UserPlus2, Upload, Clock, Phone } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { submitProfile, uploadProfilePhoto } from '../lib/api';
-import { PROFESSION_OPTIONS } from '../lib/options';
+import { PROFESSION_OPTIONS, CASTE_OPTIONS } from '../lib/options';
 
 interface RegisterPageProps {
   navigateToPage: (page: string) => void;
@@ -419,16 +419,11 @@ export default function Registration({ navigateToPage }: RegisterPageProps) {
                       className="w-full text-xs rounded-xl border border-stone-200 p-3 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-stone-50 text-stone-700"
                     >
                       <option value="">{t('reg.chooseCaste', '-- Choose Community --', '-- కులాన్ని ఎంచుకోండి --')}</option>
-                      <option value="Reddy">Reddy</option>
-                      <option value="Kamma">Kamma</option>
-                      <option value="Kapu">Kapu / Telaga / Balija</option>
-                      <option value="Goud">Goud</option>
-                      <option value="Arya Vysya">Arya Vysya</option>
-                      <option value="Yadav">Yadav</option>
-                      <option value="Padmashali">Padmashali</option>
-                      <option value="Brahmin">Brahmin</option>
-                      <option value="Naidu">Naidu</option>
-                      <option value="Other">Other Telugu Caste</option>
+                      {CASTE_OPTIONS.map((c) => (
+                        <option key={c} value={c}>
+                          {c}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
