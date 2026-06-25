@@ -6,7 +6,7 @@ import './index.css';
 import { LanguageProvider } from './context/LanguageContext';
 
 // Dynamically initialize Google Analytics if configured or fallback
-const GA_ID = (import.meta as any).env?.VITE_GOOGLE_ANALYTICS_ID || 'G-D77LKSNL6X';
+const GA_ID = (import.meta as any).env?.VITE_GOOGLE_ANALYTICS_ID || 'G-3SBJW3QW7J';
 if (GA_ID && typeof window !== 'undefined') {
   const scriptTag = document.createElement('script');
   scriptTag.async = true;
