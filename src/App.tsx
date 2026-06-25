@@ -167,6 +167,9 @@ export default function App() {
       <Analytics />
       <SpeedInsights />
 
+      {/* 7. Vercel Speed Insights */}
+      <SpeedInsights />
+
     </div>
   );
 }
