@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { AuthProvider, useAuth } from './auth/AuthContext';
 import { Layout } from './components/Layout';
 import { ResourceCrud } from './components/ResourceCrud';
@@ -46,6 +47,7 @@ export default function App() {
         </Routes>
       </AuthProvider>
       <Analytics />
+      <SpeedInsights />
     </BrowserRouter>
   );
 }
