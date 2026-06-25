@@ -9,3 +9,8 @@ coverage/
 
 # Build info
 *.tsbuildinfo
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
