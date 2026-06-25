@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import CallExpertModal from './components/CallExpertModal';
@@ -12,15 +13,43 @@ import AllCaste from './pages/All Caste';
 import SuccessStories from './pages/SuccessStories';
 import Contact from './pages/Contact';
 import Registration from './pages/Registration';
+import NotFound from './pages/NotFound';
+
+// Single source of truth mapping logical page ids <-> real URL paths.
+const PAGE_TO_PATH: Record<string, string> = {
+  home: '/',
+  about: '/about',
+  profiles: '/profiles',
+  communities: '/communities',
+  'success-stories': '/success-stories',
+  contact: '/contact',
+  register: '/register',
+};
+
+const PATH_TO_PAGE: Record<string, string> = Object.fromEntries(
+  Object.entries(PAGE_TO_PATH).map(([page, path]) => [path, page]),
+);
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<string>('home');
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isExpertOpen, setIsExpertOpen] = useState(false);
   const [profileGenderFilter, setProfileGenderFilter] = useState<'All' | 'Bride' | 'Groom'>('All');
 
-  // Smooth scroll to top on page navigation to simulate routing
+  // Derive the active page from the URL so deep links and refreshes work.
+  const currentPage = PATH_TO_PAGE[location.pathname] ?? 'notfound';
+
+  // Report client-side route changes to Google Analytics as page views.
+  useEffect(() => {
+    const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag;
+    if (typeof gtag === 'function') {
+      gtag('event', 'page_view', { page_path: location.pathname });
+    }
+  }, [location.pathname]);
+
+  // Navigate by logical page id (keeps every child component's API unchanged).
   const handleNavigate = (pageId: string) => {
-    setCurrentPage(pageId);
+    navigate(PAGE_TO_PATH[pageId] ?? '/');
     window.scrollTo({
       top: 0,
       behavior: 'smooth'
@@ -83,14 +112,20 @@ export default function App() {
         );
       case 'register':
         return (
-          <Registration 
-            navigateToPage={handleNavigate} 
+          <Registration
+            navigateToPage={handleNavigate}
+          />
+        );
+      case 'notfound':
+        return (
+          <NotFound
+            navigateToPage={handleNavigate}
           />
         );
       default:
         return (
-          <Home 
-            onTalkToExpertClick={handleOpenExpertModal} 
+          <Home
+            onTalkToExpertClick={handleOpenExpertModal}
             navigateToPage={handleNavigate}
             profileGenderFilter={profileGenderFilter}
             setProfileGenderFilter={setProfileGenderFilter}
